@@ -1,0 +1,55 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Nueva receta de color | SIGCE{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl space-y-6">
+    <div>
+        <a href="{% url 'palette_lab:lista' %}" class="text-sm font-semibold text-[#4752C4] hover:underline">← Volver a recetas</a>
+        <p class="mt-5 text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Laboratorio de color</p>
+        <h1 class="mt-1 text-3xl font-bold text-[#313338]">Crear receta</h1>
+        <p class="mt-2 text-slate-600">Completa los datos de la receta. Los gramos se calculan a partir de la dosificación y el peso de resina.</p>
+    </div>
+
+    <form method="post" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% if form.non_field_errors %}<div class="rounded-lg bg-red-50 p-3 text-sm text-red-800">{{ form.non_field_errors }}</div>{% endif %}
+        {% if formset.non_form_errors %}<div class="rounded-lg bg-red-50 p-3 text-sm text-red-800">{{ formset.non_form_errors }}</div>{% endif %}
+
+        <fieldset class="space-y-4">
+            <legend class="text-lg font-semibold text-[#313338]">Datos de la receta</legend>
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ field.label }}</label>
+                <div class="mt-1">{{ field }}</div>
+                {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+                {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+            </div>
+            {% endfor %}
+        </fieldset>
+
+        <fieldset class="space-y-4 border-t border-slate-200 pt-5">
+            <legend class="text-lg font-semibold text-[#313338]">Pigmentos</legend>
+            <p class="text-sm text-slate-600">La participación de todos los pigmentos debe sumar 100%.</p>
+            {% for detail_form in formset %}
+            <div class="grid gap-3 rounded-lg bg-[#F2F3F5] p-4 sm:grid-cols-2">
+                {% for hidden in detail_form.hidden_fields %}{{ hidden }}{% endfor %}
+                {% for field in detail_form.visible_fields %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ field.label }}</label>
+                    <div class="mt-1">{{ field }}</div>
+                    {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </fieldset>
+
+        <div class="flex flex-wrap gap-3 border-t border-slate-200 pt-5">
+            <button type="submit" class="rounded-lg bg-[#5865F2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#4752C4]">Guardar receta</button>
+            <a href="{% url 'palette_lab:lista' %}" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

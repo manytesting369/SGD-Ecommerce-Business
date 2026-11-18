@@ -1,0 +1,202 @@
+<header class="bg-[#313338] text-white shadow-md sticky top-0 z-50">
+    <div class="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div class="flex min-w-0 flex-wrap items-center gap-2 sm:flex-nowrap sm:gap-3">
+            <a href="{% url 'catalog:portada' %}" class="whitespace-nowrap text-lg font-extrabold tracking-tight text-white hover:opacity-90 sm:text-xl">
+                SGD GLOBAL IMPORT
+            </a>
+            <span class="max-w-[10.5rem] rounded bg-[#5865F2] px-2.5 py-1 text-[10px] font-semibold uppercase leading-4 text-white sm:max-w-none sm:text-xs">
+                SIGCE · Resinas &amp; Epóxicos
+            </span>
+        </div>
+        <nav aria-label="Navegación principal" class="flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs font-medium sm:w-auto sm:justify-end sm:gap-5 sm:text-sm">
+            <a href="{% url 'catalog:portada' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Inicio</a>
+            <a href="{% url 'catalog:store_front' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Catálogo</a>
+            <a href="{% url 'catalog:store_front' %}?ofertas=1" class="text-amber-300 hover:text-amber-200 font-semibold transition">Ofertas</a>
+            <a href="{% url 'calculator:index' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Estimador</a>
+            <a href="{% url 'sales:solicitar_servicio' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Servicios</a>
+            <a href="{% url 'palette_lab:lista' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Paletas</a>
+            <div class="relative" id="cart-popover">
+                <button
+                    type="button"
+                    id="cart-toggle"
+                    aria-expanded="false"
+                    aria-controls="cart-popover-panel"
+                    class="relative inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:border-white/25 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-5 w-5">
+                        <path d="M3.5 4.5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4l1.5-6.3H6.4M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Carrito</span>
+                    <span id="cart-count" class="inline-flex min-w-6 items-center justify-center rounded-full bg-[#5865F2] px-1.5 py-0.5 text-xs font-extrabold text-white">{{ cantidad_articulos }}</span>
+                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4 transition-transform" id="cart-chevron">
+                        <path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <section id="cart-popover-panel" class="absolute right-0 top-full z-[60] mt-3 hidden w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white text-[#313338] shadow-[0_24px_70px_-20px_rgba(20,24,40,0.55)]" aria-label="Resumen del carrito">
+                    <div class="flex items-start justify-between border-b border-slate-100 bg-[#F2F3F5] px-5 py-4">
+                        <div>
+                            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4752C4]">Tu selección</p>
+                            <h2 class="mt-1 text-base font-extrabold">Carrito de compras</h2>
+                        </div>
+                        <span id="cart-preview-count" class="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-600">{{ cantidad_articulos }} artículos</span>
+                    </div>
+                    <div id="cart-popover-content">
+                        {% if lineas %}
+                        <ul class="max-h-80 divide-y divide-slate-100 overflow-y-auto px-4">
+                            {% for linea in lineas %}
+                            <li class="flex gap-3 py-3.5">
+                                {% if linea.disponible and linea.imagen %}
+                                <img src="{{ linea.imagen }}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='/media/productos/RES-BAJA-VISC.svg';" class="h-14 w-14 shrink-0 rounded-xl border border-slate-200 bg-[#F2F3F5] object-cover">
+                                {% else %}
+                                <span class="grid h-14 w-14 shrink-0 place-items-center rounded-xl border border-slate-200 bg-[#F2F3F5] text-[#4752C4]">
+                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-6 w-6">
+                                        <path d="M5 6.5 12 3l7 3.5v11L12 21l-7-3.5v-11Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <path d="m5.5 6.8 6.5 3.4 6.5-3.4M12 10.2V20" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                {% endif %}
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-bold">{{ linea.nombre }}</p>
+                                    <p class="mt-0.5 truncate text-xs text-slate-500">{{ linea.envase|default:"No disponible" }}{% if linea.kit_indivisible %} · Paquete técnico{% endif %}</p>
+                                    {% if linea.disponible %}
+                                    <p class="mt-1 text-xs text-slate-600">{{ linea.cantidad }} × S/ {{ linea.precio_unitario }}</p>
+                                    {% else %}
+                                    <p class="mt-1 text-xs font-semibold text-rose-700">Revisa esta línea en el carrito</p>
+                                    {% endif %}
+                                </div>
+                                <p class="shrink-0 pt-0.5 text-sm font-extrabold">S/ {{ linea.subtotal|floatformat:2 }}</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <div class="px-6 py-8 text-center">
+                            <span class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-indigo-50 text-[#4752C4]">
+                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-6 w-6">
+                                    <path d="M3.5 4.5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4l1.5-6.3H6.4M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <p class="mt-3 text-sm font-bold">Aún no agregas productos</p>
+                            <p class="mt-1 text-xs text-slate-500">Tus selecciones aparecerán aquí.</p>
+                        </div>
+                        {% endif %}
+                        <div class="border-t border-slate-100 bg-white px-5 py-4">
+                            <div class="mb-3 flex items-center justify-between">
+                                <span class="text-sm font-semibold text-slate-600">Subtotal estimado</span>
+                                <strong class="text-lg font-extrabold">S/ {{ subtotal|default:0|floatformat:2 }}</strong>
+                            </div>
+                            <a href="{% url 'sales:carrito' %}" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
+                                Ver carrito completo
+                                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
+                                    <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+                <span id="cart-live-region" class="sr-only" aria-live="polite"></span>
+            </div>
+            {% if user.is_staff %}
+            <a href="{% url 'sales:recordatorios' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Seguimiento</a>
+            <a href="{% url 'sales:metricas' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Métricas</a>
+            <a href="/admin/" class="text-slate-300 hover:text-white text-xs border border-slate-600 px-2.5 py-1.5 rounded-lg transition">Panel Interno</a>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="flex items-center gap-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-100 font-semibold">{{ user.first_name|default:user.username }}</span>
+                <span class="text-emerald-400 font-bold">(Ofertas activas)</span>
+                <a href="{% url 'catalog:salir' %}" class="ml-2 text-rose-300 hover:text-rose-200 underline">Salir</a>
+            </div>
+            {% else %}
+            <a href="{% url 'catalog:registro' %}" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-2 px-4 rounded-lg text-xs transition shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                Registrarse
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+<script>
+    (() => {
+        const toggle = document.getElementById("cart-toggle");
+        const panel = document.getElementById("cart-popover-panel");
+        const content = document.getElementById("cart-popover-content");
+        const count = document.getElementById("cart-count");
+        const previewCount = document.getElementById("cart-preview-count");
+        const liveRegion = document.getElementById("cart-live-region");
+        const popover = document.getElementById("cart-popover");
+        if (!toggle || !panel || !content || !count || !previewCount || !liveRegion || !popover) return;
+
+        const setOpen = (open) => {
+            panel.classList.toggle("hidden", !open);
+            toggle.setAttribute("aria-expanded", String(open));
+            document.getElementById("cart-chevron")?.classList.toggle("rotate-180", open);
+        };
+        toggle.addEventListener("click", () => {
+            setOpen(toggle.getAttribute("aria-expanded") !== "true");
+        });
+        document.addEventListener("click", (event) => {
+            if (!popover.contains(event.target)) setOpen(false);
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+                setOpen(false);
+                toggle.focus();
+            }
+        });
+
+        document.addEventListener("submit", async (event) => {
+            const form = event.target.closest("form[data-cart-add]");
+            if (!form) return;
+            event.preventDefault();
+            const button = form.querySelector("button[type='submit']");
+            const originalText = button?.textContent;
+            form.querySelector("[data-cart-feedback]")?.remove();
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Agregando…";
+            }
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    credentials: "same-origin",
+                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || "No se pudo agregar el paquete.");
+                }
+                const summaryResponse = await fetch("{% url 'sales:carrito' %}", {
+                    credentials: "same-origin",
+                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                });
+                if (!summaryResponse.ok) throw new Error(`HTTP ${summaryResponse.status}`);
+                const page = new DOMParser().parseFromString(await summaryResponse.text(), "text/html");
+                const nextContent = page.querySelector("#cart-popover-content");
+                const nextCount = page.querySelector("#cart-count");
+                const nextPreviewCount = page.querySelector("#cart-preview-count");
+                if (!nextContent || !nextCount || !nextPreviewCount) {
+                    throw new Error("No se recibió el resumen del carrito.");
+                }
+                content.innerHTML = nextContent.innerHTML;
+                count.textContent = nextCount.textContent;
+                previewCount.textContent = nextPreviewCount.textContent;
+                liveRegion.textContent = `${result.message} ${nextCount.textContent} artículos en el carrito.`;
+                setOpen(true);
+            } catch (error) {
+                const notice = document.createElement("p");
+                notice.setAttribute("role", "alert");
+                notice.dataset.cartFeedback = "";
+                notice.className = "mt-2 text-sm font-semibold text-rose-700";
+                notice.textContent = error.message || "No se pudo actualizar el carrito. Revisa tu conexión e inténtalo otra vez.";
+                form.appendChild(notice);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            }
+        });
+    })();
+</script>

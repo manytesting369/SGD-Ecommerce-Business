@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ title }} | SIGCE - SGD Global Import{% endblock %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary: #1D4ED8;
+        --secondary: #0F1E36;
+        --accent: #38BDF8;
+        --primary-fg: #FFFFFF;
+        --header-bg: #0F1E36;
+        --header-color: #FFFFFF;
+        --breadcrumbs-bg: #1E293B;
+        --breadcrumbs-fg: #E2E8F0;
+        --link-fg: #1D4ED8;
+        --link-hover-color: #0284C7;
+    }
+    #header {
+        background: linear-gradient(90deg, #0F1E36 0%, #1D4ED8 100%);
+        border-bottom: 3px solid #0284C7;
+        padding: 14px 24px;
+    }
+    #branding h1, #branding h1 a:link, #branding h1 a:visited {
+        color: #FFFFFF !important;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+    .module h2, .module caption, .inline-group h2 {
+        background: #0F1E36 !important;
+        color: #FFFFFF !important;
+        font-weight: 700;
+        border-radius: 6px 6px 0 0;
+    }
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: #1D4ED8 !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+    }
+    .button.default, input[type=submit].default {
+        background: #0284C7 !important;
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        SIGCE - SGD Global Import · Panel Técnico y Financiero
+    </a>
+</h1>
+{% endblock %}

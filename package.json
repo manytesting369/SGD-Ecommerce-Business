@@ -1,0 +1,12 @@
+{
+  "name": "tienda-virtual-mvp-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "tw:watch": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch=always",
+    "tw:build": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

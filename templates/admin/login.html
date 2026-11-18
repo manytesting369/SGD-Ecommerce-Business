@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso y Registro | SGD Global Import</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <style>
+        :root {
+            --card-bg: #2b2738;
+            --input-bg: #3b364c;
+            --input-border: #524b68;
+            --accent: #6d5dfc;
+            --accent-hover: #5848e8;
+            --text-main: #ffffff;
+            --text-muted: #a39eb5;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, #6b657e 0%, #484357 55%, #302c3d 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 1020px;
+            min-height: 600px;
+            background: var(--card-bg);
+            border-radius: 26px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1.02fr 1fr;
+            gap: 16px;
+            box-shadow: 0 30px 70px rgba(12, 10, 20, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @media (max-width: 860px) {
+            .auth-card { grid-template-columns: 1fr; }
+            .cover-panel { min-height: 240px; }
+        }
+        .cover-panel {
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 28px;
+            background-color: #382f56;
+            background-image:
+                linear-gradient(180deg, rgba(35, 27, 58, 0.25) 0%, rgba(27, 22, 42, 0.85) 100%),
+                url("{% static 'img/login-portada.jpg' %}"),
+                url("https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=85");
+            background-size: cover;
+            background-position: center;
+        }
+        .cover-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2;
+        }
+        .brand-logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .back-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .cover-bottom {
+            z-index: 2;
+            text-align: center;
+            margin-top: auto;
+        }
+        .cover-title {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 16px;
+        }
+        .dots { display: flex; justify-content: center; gap: 8px; }
+        .dot { height: 4px; width: 26px; border-radius: 99px; background: rgba(255, 255, 255, 0.3); }
+        .dot.active { width: 38px; background: #ffffff; }
+        .form-panel {
+            padding: 34px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .form-heading { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .form-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+        .form-sub a { color: #9d91ff; font-weight: 600; text-decoration: underline; }
+        .field { margin-bottom: 14px; position: relative; }
+        .input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: #ffffff;
+            padding: 14px 16px;
+            border-radius: 11px;
+            font-size: 0.92rem;
+            outline: none;
+        }
+        .input:focus {
+            border-color: #8b7dff;
+            box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.25);
+        }
+        .btn-submit {
+            width: 100%;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 11px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-submit:hover { background: var(--accent-hover); }
+        .error-alert {
+            background: rgba(239, 68, 68, 0.16);
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            color: #fecaca;
+            padding: 11px 14px;
+            border-radius: 11px;
+            font-size: 0.82rem;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="cover-panel">
+            <div class="cover-top">
+                <a href="{% url 'catalog:portada' %}" class="brand-logo">SGD</a>
+                <a href="{% url 'catalog:store_front' %}" class="back-pill">Volver al catálogo &rarr;</a>
+            </div>
+            <div class="cover-bottom">
+                <h2 class="cover-title">Acabados Epóxicos,<br>Proyectos que Perduran</h2>
+                <div class="dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot active"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-panel">
+            <h1 class="form-heading">Iniciar sesión</h1>
+            <p class="form-sub">
+                ¿Eres cliente nuevo y quieres activar ofertas? <a href="/registro/">Regístrate aquí</a>
+            </p>
+            {% if form.errors %}
+            <div class="error-alert">
+                Usuario o contraseña incorrectos. Inténtalo de nuevo o regístrate gratis.
+            </div>
+            {% endif %}
+            <form action="{{ app_path }}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <div class="field">
+                    <input type="text" name="username" class="input" placeholder="Nombre de usuario" required autofocus>
+                </div>
+                <div class="field">
+                    <input type="password" name="password" class="input" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn-submit">Ingresar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

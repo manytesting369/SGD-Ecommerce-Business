@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Métricas | SIGCE{% endblock %}
+
+{% block content %}
+<section class="space-y-6">
+    <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Semana 4 · Resumen operativo</p>
+        <h1 class="mt-1 text-3xl font-bold text-[#313338]">Métricas del negocio</h1>
+        <p class="mt-2 text-slate-600">Indicadores calculados con los registros actuales del catálogo, recetas y pedidos.</p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Materiales activos</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ productos_activos }}</p></article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Presentaciones activas</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ presentaciones_activas }}</p></article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Recetas de color</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ paletas_guardadas }}</p></article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Pedidos no anulados</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ pedidos }}</p></article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Importe registrado en pedidos</p><p class="mt-2 text-3xl font-bold text-[#313338]">S/ {{ importe_pedidos|floatformat:2 }}</p></article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Seguimientos vencidos</p><p class="mt-2 text-3xl font-bold {% if recordatorios_pendientes %}text-amber-700{% else %}text-[#313338]{% endif %}">{{ recordatorios_pendientes }}</p></article>
+    </div>
+</section>
+{% endblock %}

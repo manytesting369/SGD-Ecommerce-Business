@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Seguimiento de pedidos | SIGCE{% endblock %}
+
+{% block content %}
+<section class="space-y-6">
+    <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Semana 4 · Seguimiento</p>
+        <h1 class="mt-1 text-3xl font-bold text-[#313338]">Recordatorios de clientes</h1>
+        <p class="mt-2 text-slate-600">Pedidos con seguimiento vencido o programado durante los próximos siete días. Esta pantalla organiza el trabajo; no envía mensajes automáticamente.</p>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead class="bg-[#F2F3F5] text-xs uppercase tracking-wide text-slate-600">
+                    <tr><th class="px-4 py-3">Pedido</th><th class="px-4 py-3">Cliente</th><th class="px-4 py-3">Fecha de seguimiento</th><th class="px-4 py-3">Estado</th><th class="px-4 py-3 text-right">Total</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td class="whitespace-nowrap px-4 py-3 font-semibold text-[#313338]">{{ pedido.numero }}</td>
+                        <td class="px-4 py-3"><span class="block font-medium">{{ pedido.cliente_nombre }}</span><span class="text-xs text-slate-500">{{ pedido.cliente_correo }}</span></td>
+                        <td class="whitespace-nowrap px-4 py-3 {% if pedido.fecha_recordatorio < hoy %}font-semibold text-red-700{% else %}text-slate-700{% endif %}">{{ pedido.fecha_recordatorio|date:"d/m/Y" }}</td>
+                        <td class="px-4 py-3">{{ pedido.get_estado_display }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-right">S/ {{ pedido.total_pagar }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="px-4 py-10 text-center text-slate-500">No hay recordatorios para esta semana.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

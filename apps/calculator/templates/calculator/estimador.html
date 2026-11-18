@@ -1,0 +1,28 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <nav aria-label="Ruta de navegación" class="mb-5 text-sm text-slate-500">
+        <a href="{% url 'catalog:store_front' %}" class="font-medium text-[#4752C4] hover:underline">Catálogo</a>
+        <span aria-hidden="true" class="mx-2">/</span>
+        <span aria-current="page" class="font-semibold text-[#313338]">Estimador técnico</span>
+    </nav>
+
+    <header class="mb-7 overflow-hidden rounded-2xl bg-[#313338] text-white shadow-sm">
+        <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300">Herramienta de proyecto · RF-03</p>
+                <h1 class="mt-2 text-2xl font-extrabold sm:text-3xl">Calcula materiales para tu proyecto</h1>
+                <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+                    Elige el uso final, ingresa medidas y recibe la dosificación técnica junto con una cotización basada en kits y pigmentos disponibles.
+                </p>
+            </div>
+            <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                Explorar catálogo
+            </a>
+        </div>
+    </header>
+
+    {% include "calculator/partials/calculator_widget.html" %}
+</main>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Finalizar compra | SIGCE{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-4xl space-y-6">
+    <header>
+        <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Pago de prueba o proforma B2B</p>
+        <h1 class="mt-1 text-3xl font-extrabold text-[#313338]">Finalizar compra</h1>
+    </header>
+
+    {% for error in errores %}
+    <p class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-900" role="alert">{{ error }}</p>
+    {% endfor %}
+
+    {% if resumen and resumen.lineas %}
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <form method="post" class="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            {% csrf_token %}
+            <div class="grid gap-4 sm:grid-cols-2">
+                <label class="text-sm font-semibold text-[#313338]">
+                    DNI o RUC
+                    <input name="cliente_documento" inputmode="numeric" pattern="([0-9]{8}|[0-9]{11})" maxlength="11" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                </label>
+                <label class="text-sm font-semibold text-[#313338]">
+                    Nombre o razón social
+                    <input name="cliente_nombre" maxlength="140" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                </label>
+                <label class="text-sm font-semibold text-[#313338] sm:col-span-2">
+                    Correo electrónico
+                    <input type="email" name="cliente_correo" maxlength="120" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                </label>
+                <label class="text-sm font-semibold text-[#313338]">
+                    Modalidad
+                    <select name="modalidad" id="modalidad-compra" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                        <option value="PAGADO" {% if form_data.modalidad == "PAGADO" %}selected{% endif %}>Pago de prueba</option>
+                        <option value="PROFORMA" {% if form_data.modalidad == "PROFORMA" %}selected{% endif %}>Proforma corporativa B2B</option>
+                    </select>
+                </label>
+                <label class="text-sm font-semibold text-[#313338]">
+                    Medio de pago simulado
+                    <select name="metodo_pago_simulado" id="metodo-pago" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                        <option value="TARJETA_PRUEBA" {% if form_data.metodo_pago_simulado == "TARJETA_PRUEBA" %}selected{% endif %}>Tarjeta de prueba</option>
+                        <option value="YAPE_PRUEBA" {% if form_data.metodo_pago_simulado == "YAPE_PRUEBA" %}selected{% endif %}>Yape de prueba</option>
+                        <option value="TRANSFERENCIA_B2B" {% if form_data.metodo_pago_simulado == "TRANSFERENCIA_B2B" %}selected{% endif %}>Transferencia B2B</option>
+                    </select>
+                </label>
+            </div>
+            <fieldset class="rounded-xl border border-slate-200 p-4">
+                <legend class="px-1 text-sm font-bold text-[#313338]">¿Quieres coordinar asesoría o instalación?</legend>
+                <p class="mb-3 text-xs leading-5 text-slate-600">El servicio puede agregarse a esta proforma. El equipo coordinará profesional, días y tarifa diaria antes de confirmar el importe.</p>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <label class="text-sm font-semibold text-[#313338]">
+                        Servicio (opcional)
+                        <select name="tipo_servicio" id="servicio-pedido" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                            <option value="">Solo materiales</option>
+                            {% for value, label in tipos_servicio %}
+                            <option value="{{ value }}" {% if form_data.tipo_servicio == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="text-sm font-semibold text-[#313338]">
+                        Aplicación del servicio
+                        <select name="proyecto_servicio" id="proyecto-servicio" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                            <option value="">Sin servicio</option>
+                            {% for value, label in proyectos_servicio %}
+                            <option value="{{ value }}" {% if form_data.proyecto_servicio == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+            </fieldset>
+            <p class="rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs leading-5 text-indigo-950">
+                Entorno académico de prueba. No ingreses números de tarjeta, códigos de seguridad ni datos bancarios. No se realiza un cobro real.
+            </p>
+            <p id="nota-proforma" class="hidden rounded-lg border border-indigo-200 bg-[#F2F3F5] p-3 text-sm text-[#313338]">
+                La proforma B2B no descuenta inventario hasta que el personal autorizado confirme el pago. Los pisos sanitarios se describen según el catálogo, sin sustituir la evaluación normativa del proyecto.
+            </p>
+            <p id="nota-servicio" class="hidden rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm leading-5 text-indigo-950" role="status">
+                Esta solicitud se procesa como proforma. No se cobrará el servicio hasta coordinar días y tarifa diaria con el profesional asignado.
+            </p>
+            <button type="submit" class="rounded-lg bg-[#5865F2] px-5 py-3 text-sm font-bold text-white hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
+                Crear pedido de prueba
+            </button>
+        </form>
+
+        <aside class="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="text-lg font-bold text-[#313338]">Resumen del pedido</h2>
+            <ul class="mt-4 space-y-3 text-sm">
+                {% for linea in resumen.lineas %}
+                <li class="flex justify-between gap-3">
+                    <span class="text-slate-600">{{ linea.cantidad }} × {{ linea.presentacion.nombre_envase }}</span>
+                    <strong class="whitespace-nowrap">S/ {{ linea.subtotal }}</strong>
+                </li>
+                {% endfor %}
+            </ul>
+            <p class="mt-4 flex justify-between border-t border-slate-200 pt-4 font-bold"><span>Total estimado</span><span>S/ {{ resumen.subtotal }}</span></p>
+        </aside>
+    </div>
+    {% else %}
+    <div class="rounded-xl border border-slate-200 bg-white p-6">
+        <p class="text-sm text-slate-700">Agrega productos disponibles antes de finalizar la compra.</p>
+        <a href="{% url 'sales:carrito' %}" class="mt-3 inline-block font-semibold text-[#4752C4] underline">Volver al carrito</a>
+    </div>
+    {% endif %}
+</section>
+<script>
+    (() => {
+        const modalidad = document.getElementById("modalidad-compra");
+        const metodo = document.getElementById("metodo-pago");
+        const nota = document.getElementById("nota-proforma");
+        const servicio = document.getElementById("servicio-pedido");
+        const proyecto = document.getElementById("proyecto-servicio");
+        const notaServicio = document.getElementById("nota-servicio");
+        const actualizar = () => {
+            const requiereProforma = servicio.value !== "";
+            if (requiereProforma) modalidad.value = "PROFORMA";
+            proyecto.required = requiereProforma;
+            proyecto.disabled = !requiereProforma;
+            if (!requiereProforma) proyecto.value = "";
+            const proforma = modalidad.value === "PROFORMA";
+            nota.classList.toggle("hidden", !proforma);
+            notaServicio.classList.toggle("hidden", !requiereProforma);
+            metodo.value = proforma ? "TRANSFERENCIA_B2B" : "TARJETA_PRUEBA";
+            for (const opcion of metodo.options) {
+                opcion.disabled = proforma
+                    ? opcion.value !== "TRANSFERENCIA_B2B"
+                    : opcion.value === "TRANSFERENCIA_B2B";
+            }
+        };
+        modalidad.addEventListener("change", actualizar);
+        servicio.addEventListener("change", actualizar);
+        actualizar();
+    })();
+</script>
+{% endblock %}

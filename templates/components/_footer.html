@@ -1,0 +1,23 @@
+<footer class="mt-12 border-t border-slate-700 bg-[#313338] text-slate-200">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-9 sm:px-6 md:grid-cols-[1.4fr_1fr] lg:px-8">
+        <div>
+            <a href="{% url 'catalog:portada' %}" class="text-sm font-extrabold tracking-[0.12em] text-white hover:text-indigo-200">
+                SGD GLOBAL IMPORT
+            </a>
+            <p class="mt-2 max-w-lg text-sm leading-6 text-slate-300">
+                Materiales epóxicos, pigmentos y servicios coordinados para proyectos de pisos, mesas, manualidades y color.
+            </p>
+        </div>
+        <nav aria-label="Enlaces del pie de página" class="grid grid-cols-2 gap-3 text-sm font-semibold">
+            <a href="{% url 'catalog:portada' %}" class="rounded-lg px-2 py-1.5 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Inicio</a>
+            <a href="{% url 'catalog:store_front' %}" class="rounded-lg px-2 py-1.5 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Catálogo</a>
+            <a href="{% url 'catalog:store_front' %}?ofertas=1" class="rounded-lg px-2 py-1.5 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Ofertas</a>
+            <a href="{% url 'calculator:index' %}" class="rounded-lg px-2 py-1.5 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Estimador</a>
+            <a href="{% url 'sales:solicitar_servicio' %}" class="rounded-lg px-2 py-1.5 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Servicios</a>
+            <a href="{% url 'palette_lab:lista' %}" class="rounded-lg px-2 py-1.5 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Paletas</a>
+        </nav>
+    </div>
+    <div class="border-t border-white/10 px-4 py-4 text-center text-xs text-slate-400">
+        Sistema de Gestión y Comercialización Epóxica (SIGCE · SGD Global Import)
+    </div>
+</footer>

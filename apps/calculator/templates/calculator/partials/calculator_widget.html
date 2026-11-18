@@ -1,0 +1,147 @@
+<section id="estimador-medidas" class="overflow-hidden rounded-2xl border border-slate-200 border-t-4 border-t-[#5865F2] bg-white shadow-sm" aria-labelledby="estimador-titulo">
+    <div class="p-5 sm:p-7">
+        <form method="post" action="{% url 'calculator:index' %}" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {% csrf_token %}
+            <label class="text-sm font-semibold text-[#313338]">
+                Tipo de proyecto
+                <select name="tipo_proyecto_id" required class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    {% for proyecto in proyectos %}
+                    <option value="{{ proyecto.categoria_id }}" {% if selected_proyecto_id == proyecto.categoria_id %}selected{% endif %} data-espesor-min="{{ proyecto.espesor_min_mm }}" data-espesor-max="{{ proyecto.espesor_max_mm }}">
+                        {{ proyecto.etiqueta }}
+                    </option>
+                    {% empty %}
+                    <option value="" selected disabled>No hay proyectos con kits compatibles disponibles</option>
+                    {% endfor %}
+                </select>
+                <span class="mt-1 block text-xs font-normal text-slate-500">Selecciona la aplicación; el sistema usará internamente el kit compatible disponible.</span>
+            </label>
+
+            <label class="text-sm font-semibold text-[#313338]">
+                Pigmento
+                <select name="producto_pigmento_id" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <option value="" {% if not selected_pigmento_id %}selected{% endif %}>Sin pigmento · acabado cristal</option>
+                    {% for pigmento in pigmentos %}
+                    <option value="{{ pigmento.id }}" {% if selected_pigmento_id == pigmento.id %}selected{% endif %}>{{ pigmento.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <span class="mt-1 block text-xs font-normal text-slate-500">La dosificación respeta el intervalo técnico del pigmento.</span>
+            </label>
+
+            <label class="text-sm font-semibold text-[#313338]">
+                Área del proyecto
+                <span class="relative mt-1 block">
+                    <input type="number" name="area_m2" value="{{ form_data.area_m2 }}" min="0.01" step="0.01" inputmode="decimal" required class="block w-full rounded-lg border border-slate-300 px-3 py-2.5 pr-14 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30" aria-describedby="area-ayuda">
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-medium text-slate-500">m²</span>
+                </span>
+                <span id="area-ayuda" class="mt-1 block text-xs font-normal text-slate-500">Superficie total que deseas recubrir.</span>
+            </label>
+
+            <label class="text-sm font-semibold text-[#313338]">
+                Espesor aplicado
+                <span class="relative mt-1 block">
+                    <input type="number" name="espesor_mm" value="{{ form_data.espesor_mm }}" min="0.01" step="0.01" inputmode="decimal" required class="block w-full rounded-lg border border-slate-300 px-3 py-2.5 pr-14 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30" aria-describedby="espesor-ayuda">
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-medium text-slate-500">mm</span>
+                </span>
+                <span id="espesor-ayuda" class="mt-1 block text-xs font-normal text-slate-500">Se validará con el rango técnico del tipo de proyecto.</span>
+            </label>
+
+            <label class="text-sm font-semibold text-[#313338]">
+                Tipo de superficie
+                <select name="superficie" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <option value="LISA" {% if form_data.superficie == "LISA" %}selected{% endif %}>Lisa · 5% de merma</option>
+                    <option value="POROSA" {% if form_data.superficie == "POROSA" %}selected{% endif %}>Porosa · 15% de merma</option>
+                </select>
+            </label>
+
+            <label class="text-sm font-semibold text-[#313338]">
+                Dosificación de pigmento
+                <select name="dosificacion_pct" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    {% for valor, etiqueta, recomendada in dosificacion_opciones %}
+                    <option value="{{ valor }}" {% if form_data.dosificacion_pct == valor %}selected{% endif %}>
+                        {{ etiqueta }}{% if recomendada %} · recomendado SGD{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <span class="mt-1 block text-xs font-normal text-slate-500">Recomendación SGD: {{ dosificacion_recomendada_pct }}% dentro del rango técnico del pigmento.</span>
+            </label>
+
+            <div class="sm:col-span-2 lg:col-span-3">
+                <button type="submit" {% if not proyectos %}disabled{% endif %} class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#5865F2] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <path d="M4 19.5h16M6.5 16V9m5 7V4.5m5 11.5v-4" stroke-linecap="round"/>
+                    </svg>
+                    Estimar cantidades
+                </button>
+            </div>
+        </form>
+
+        {% if error_calc %}
+        <p class="mt-5 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-900" role="alert">{{ error_calc }}</p>
+        {% endif %}
+
+        {% if resultado %}
+        <div class="mt-7 overflow-hidden rounded-xl border border-slate-200 bg-[#F2F3F5]" aria-live="polite">
+            <div class="border-b border-slate-200 px-5 py-4">
+                <p class="text-xs font-bold uppercase tracking-wide text-[#4752C4]">Resultado técnico</p>
+                <h3 class="mt-1 text-lg font-extrabold text-[#313338]">Dosificación para {{ selected_proyecto_label|default:"tu proyecto" }}</h3>
+                <p class="mt-1 text-xs text-slate-600">{{ resultado.area_m2 }} m² · {{ resultado.espesor_mm }} mm · {% if resultado.superficie == "POROSA" %}superficie porosa{% else %}superficie lisa{% endif %}</p>
+            </div>
+            <dl class="grid gap-px bg-slate-200 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="bg-white p-4"><dt class="text-xs font-medium text-slate-600">Volumen geométrico</dt><dd class="mt-1 text-lg font-bold text-[#313338]">{{ resultado.volumen_litros }} L</dd></div>
+                <div class="bg-white p-4"><dt class="text-xs font-medium text-slate-600">Mezcla con {{ resultado.merma_pct }}% de merma</dt><dd class="mt-1 text-lg font-bold text-[#313338]">{{ resultado.total_mezcla_kg }} kg</dd></div>
+                <div class="bg-white p-4"><dt class="text-xs font-medium text-slate-600">Resina Parte A</dt><dd class="mt-1 text-lg font-bold text-[#313338]">{{ resultado.resina_a_kg }} kg</dd></div>
+                <div class="bg-white p-4"><dt class="text-xs font-medium text-slate-600">Catalizador Parte B</dt><dd class="mt-1 text-lg font-bold text-[#313338]">{{ resultado.catalizador_b_kg }} kg</dd></div>
+                <div class="bg-white p-4">
+                    <dt class="text-xs font-medium text-slate-600">Pigmento {% if resultado.producto_pigmento %}{{ resultado.producto_pigmento.nombre }}{% else %}dosificado{% endif %}</dt>
+                    <dd class="mt-1 text-lg font-bold text-[#313338]">{{ resultado.pigmento_gramos }} g</dd>
+                    {% if resultado.producto_pigmento %}
+                    <p class="mt-1 text-xs text-slate-500">{{ form_data.dosificacion_pct }}% {{ dosificacion_base_label }}; la cotización redondea a envases completos.</p>
+                    {% else %}
+                    <p class="mt-1 text-xs text-slate-500">Sin pigmento seleccionado.</p>
+                    {% endif %}
+                </div>
+                {% if cotizacion_carrito %}
+                <div class="bg-white p-4"><dt class="text-xs font-medium text-slate-600">Estimado de paquete disponible</dt><dd class="mt-1 text-lg font-extrabold text-[#4752C4]">S/ {{ cotizacion_carrito.total }}</dd></div>
+                {% endif %}
+            </dl>
+            {% if cotizacion_carrito %}
+            <div class="border-t border-slate-200 bg-white px-4 py-4 sm:px-5">
+                <h4 class="text-sm font-bold text-[#313338]">Paquete recomendado con presentaciones disponibles</h4>
+                <ul class="mt-3 space-y-2">
+                    {% for linea in cotizacion_carrito.lineas %}
+                    <li class="flex flex-col justify-between gap-1 rounded-lg bg-[#F7F8FA] px-3 py-2 text-sm sm:flex-row sm:items-center">
+                        <span class="font-medium text-[#313338]">{{ linea.cantidad }} × {{ linea.nombre }} <span class="text-xs text-slate-500">({{ linea.sku }})</span></span>
+                        <span class="text-xs text-slate-600">Cubre {{ linea.capacidad }} {{ linea.unidad }} · S/ {{ linea.subtotal }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <p class="mt-3 text-xs leading-5 text-slate-600">
+                    Se cotizan envases completos. El paquete cubre {{ cotizacion_carrito.total_resina_kg }} kg de mezcla
+                    {% if resultado.producto_pigmento %}y {{ cotizacion_carrito.total_pigmento_gramos }} g de pigmento{% endif %};
+                    puede quedar material sobrante. El precio usa la tarifa aplicable a tu sesión actual.
+                </p>
+            </div>
+            <div class="flex flex-col gap-3 border-t border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                <p class="text-xs leading-5 text-slate-600">La disponibilidad y el precio se vuelven a validar al agregar y al confirmar la compra.</p>
+                <form method="post" action="{% url 'sales:agregar_calculo_carrito' resultado.id %}" data-cart-add>
+                    {% csrf_token %}
+                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#313338] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] sm:w-auto">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                            <path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="10" cy="20" r="1"/>
+                            <circle cx="18" cy="20" r="1"/>
+                        </svg>
+                        Llevar Paquete Calculado al Carrito (Kit A+B + Pigmento)
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="border-t border-amber-200 bg-amber-50 p-4 sm:px-5">
+                <p class="text-sm font-semibold text-amber-950">No se puede armar un paquete comprable con el inventario actual.</p>
+                <p class="mt-1 text-xs leading-5 text-amber-900">{{ cotizacion_error|default:"No hay presentaciones compatibles disponibles para cotizar." }} No se mostrará el botón hasta poder estimar kits A+B y pigmento con cantidades y precios reales.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>

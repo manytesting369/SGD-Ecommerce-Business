@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SIGCE - SGD Global Import{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body class="bg-[#F2F3F5] text-[#313338] min-h-screen flex flex-col antialiased">
+    {% include "components/_navbar.html" %}
+    {% if messages %}
+    <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-4" role="status" aria-live="polite">
+        {% for message in messages %}
+        <p class="mb-2 rounded-lg border px-4 py-3 text-sm font-medium {% if message.tags == 'error' %}border-rose-200 bg-rose-50 text-rose-900{% else %}border-indigo-200 bg-indigo-50 text-indigo-950{% endif %}">
+            {{ message }}
+        </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+    {% include "components/_footer.html" %}
+</body>
+</html>

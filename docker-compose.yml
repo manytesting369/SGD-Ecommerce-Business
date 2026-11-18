@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: postgres_epoxico
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: -p 5435
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - ./database/backups:/backups
+    ports:
+      - "5435:5435"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -p 5435 -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: django_epoxico
+    restart: unless-stopped
+    # --fake-initial reconoce las tablas ya creadas por database/init/01_esquema_y_datos.sql sin dar error
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate --fake-initial &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  tailwind:
+    build: .
+    container_name: tailwind_epoxico
+    restart: unless-stopped
+    command: npm run tw:watch
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - web
+
+  tunnel:
+    image: ngrok/ngrok:latest
+    container_name: ngrok_tunnel
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: "http --url=${NGROK_DOMAIN} web:8000"
+    ports:
+      - "4040:4040"
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:

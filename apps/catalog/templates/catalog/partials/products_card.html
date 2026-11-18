@@ -1,0 +1,93 @@
+<article class="group flex min-h-full flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 border-t-4 border-t-[#5865F2] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <div>
+        <!-- Imagen optimizada con lazy-loading y decodificación asíncrona (bajo consumo de memoria) -->
+        <div class="relative overflow-hidden bg-[#313338]" style="height: 170px;">
+            <img
+                src="{{ item.url_imagen }}"
+                alt="{{ item.producto.nombre }} - {{ item.nombre_envase }}"
+                loading="lazy"
+                decoding="async"
+                onerror="this.onerror=null; this.src='/media/productos/RES-BAJA-VISC.svg';"
+                style="width: 100%; height: 170px; object-fit: cover; display: block;"
+            >
+            <div class="flex items-center justify-between px-3 py-1.5" style="position:absolute; top:8px; left:0; right:0;">
+                <span class="font-mono font-bold text-xs px-2 py-0.5 rounded bg-slate-900/80 text-white">{{ item.sku }}</span>
+                <span class="px-2 py-0.5 rounded text-xs bg-white/90 text-[#313338] font-semibold">{{ item.producto.get_tipo_display }}</span>
+            </div>
+        </div>
+
+        <div class="p-5 pb-2">
+            <h3 class="text-base font-bold text-[#313338] mb-1">{{ item.producto.nombre }}</h3>
+            <p class="text-sm font-semibold text-[#4752C4] mb-2">{{ item.nombre_envase }}</p>
+            <p class="text-sm text-slate-600 mb-3">{{ item.producto.descripcion }}</p>
+            <ul class="text-sm text-slate-700 space-y-1.5 bg-[#F2F3F5] p-3 rounded-lg border border-slate-200 mb-4">
+                <li><strong>Medida:</strong> {{ item.cantidad_neta }} {{ item.unidad_medida }} {% if item.volumen_litros > 0 %}({{ item.volumen_litros }} L){% endif %}</li>
+                {% if item.resina_a_kg > 0 %}
+                <li><strong>Componentes:</strong> {{ item.resina_a_kg }} kg de resina + {{ item.catalizador_b_kg }} kg de catalizador</li>
+                {% endif %}
+                {% if item.producto.formulacion %}<li><strong>Proporción:</strong> {{ item.producto.proporcion_mezcla }} partes{% if item.producto.formulacion.base_proporcion != "NO_ESPECIFICADA" %}, medida {{ item.producto.formulacion.get_base_proporcion_display|lower }}{% else %}, base por confirmar{% endif %}</li>{% endif %}
+                {% if item.producto.propiedad_fisica %}<li><strong>Densidad:</strong> {{ item.producto.propiedad_fisica.densidad_kg_l|floatformat:"-3" }} kg/L</li>{% endif %}
+                {% if item.producto.dosificacion_pigmento %}<li><strong>Dosificación:</strong> {{ item.producto.proporcion_mezcla }} (base por confirmar)</li>{% endif %}
+                <li><strong>Disponibles:</strong> {{ item.stock_actual }} envases</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="px-5 pb-5 pt-3 border-t border-slate-100">
+        {% if item.en_oferta %}
+            {% if user.is_authenticated %}
+                <div class="flex items-end justify-between gap-3">
+                    <div>
+                        <span class="block text-xs text-slate-400 line-through">Precio normal: S/ {{ item.precio_venta }}</span>
+                        <span class="block text-xs font-bold text-emerald-600">Precio Oferta Miembro (-15%)</span>
+                        <span class="text-xl font-extrabold text-emerald-700">S/ {{ item.precio_oferta }}</span>
+                    </div>
+                    <span class="bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm">
+                        Oferta activa (Ahorras S/ {{ item.ahorro_oferta }})
+                    </span>
+                </div>
+            {% else %}
+                <div class="flex items-end justify-between gap-3 mb-2.5">
+                    <div>
+                        <span class="block text-xs text-slate-500">Precio normal (Sin registro)</span>
+                        <span class="text-xl font-extrabold text-[#313338]">S/ {{ item.precio_venta }}</span>
+                    </div>
+                    <span class="bg-[#5865F2] text-white text-xs font-bold py-1.5 px-2.5 rounded-lg">En oferta</span>
+                </div>
+                <div class="rounded-lg bg-indigo-50 border border-indigo-200 p-2.5 text-xs text-slate-700 flex items-center justify-between gap-2">
+                    <div>
+                        <span class="font-bold text-[#4752C4] flex items-center gap-1.5">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4 shrink-0">
+                                <path d="M6 8V5.8a4 4 0 1 1 8 0V8m-9.2 0h10.4c.44 0 .8.36.8.8v7.4c0 .44-.36.8-.8.8H4.8a.8.8 0 0 1-.8-.8V8.8c0-.44.36-.8.8-.8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 11v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Oferta registrados: S/ {{ item.precio_oferta }}
+                        </span>
+                        <span class="text-[11px] text-slate-600">Regístrate para comprar con descuento</span>
+                    </div>
+                    <a href="{% url 'catalog:registro' %}" class="shrink-0 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold px-2.5 py-1.5 rounded-md transition">
+                        Registrarse
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="flex items-end justify-between gap-3">
+                <div>
+                    <span class="block text-xs text-slate-500">Precio de venta</span>
+                    <span class="text-xl font-extrabold text-[#313338]">S/ {{ item.precio_venta }}</span>
+                </div>
+                <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">Precio regular</span>
+            </div>
+        {% endif %}
+        <form method="post" action="{% url 'sales:agregar_carrito' item.id %}" class="mt-4" data-cart-add>
+            {% csrf_token %}
+            <input type="hidden" name="cantidad" value="1">
+            <button type="submit" {% if item.stock_actual <= 0 %}disabled{% endif %} class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] disabled:cursor-not-allowed disabled:bg-slate-400">
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
+                    <path d="M2.8 3.8h1.7l1.8 8.5a1.7 1.7 0 0 0 1.7 1.4h6.6a1.7 1.7 0 0 0 1.6-1.2l1.3-5.3H5.3M8.2 17a.8.8 0 1 0 0-1.6.8.8 0 0 0 0 1.6Zm7 0a.8.8 0 1 0 0-1.6.8.8 0 0 0 0 1.6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {% if item.stock_actual <= 0 %}Sin stock{% else %}Agregar al carrito{% endif %}
+            </button>
+        </form>
+    </div>
+</article>
