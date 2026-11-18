@@ -1,85 +1,134 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Servicios técnicos | SGD Global Import{% endblock %}
+{% block title %}Servicios técnicos e instalación | SGD Global Import{% endblock %}
 
 {% block content %}
+<style>
+    .sgd-svc-hero {
+        background: linear-gradient(125deg, #0F1E36 0%, #166091 65%, #1E3A8A 100%);
+        border-radius: 1.5rem;
+        padding: 2.25rem;
+        color: #FFFFFF;
+        box-shadow: 0 20px 40px -15px rgba(15, 30, 54, 0.42);
+    }
+    .sgd-input {
+        margin-top: 0.35rem;
+        display: block;
+        width: 100%;
+        border-radius: 0.75rem;
+        border: 1px solid #CBD5E1;
+        background: #FFFFFF;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.875rem;
+        color: #0F1E36;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .sgd-input:focus {
+        outline: none;
+        border-color: #166091;
+        box-shadow: 0 0 0 3px rgba(22, 96, 145, 0.18);
+    }
+    .sgd-svc-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.6rem;
+        border-radius: 0.9rem;
+        background: #0F1E36;
+        color: #FFFFFF;
+        font-size: 0.9rem;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .sgd-svc-btn:hover {
+        background: #166091;
+        transform: translateY(-1px);
+    }
+</style>
+
 <section class="mx-auto max-w-5xl space-y-8">
-    <header class="overflow-hidden rounded-3xl bg-[#313338] p-6 text-white shadow-lg sm:p-10">
-        <p class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-200">Servicios independientes · SGD Global Import</p>
-        <h1 class="mt-3 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">Asesoría e instalación para tu proyecto</h1>
-        <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-200 sm:text-base">
-            Solicita orientación técnica o instalación para pisos, mesas, manualidades y proyectos de color. El servicio se coordina por día con el equipo asignado.
+    <header class="sgd-svc-hero">
+        <span class="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-white">
+            Combo Obra Segura · -12% en Resinas al contratar instalación
+        </span>
+        <h1 class="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Asesoría técnica e instalación para tu proyecto
+        </h1>
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-200 sm:text-base">
+            Solicita acompañamiento experto o aplicación en obra para pisos continuos sanitarios, mesas de río y acabados de color. Coordinamos días y tarifa diaria antes de emitir proforma.
         </p>
-        <div class="mt-6 flex flex-wrap gap-3">
-            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold">Asesoría técnica</span>
-            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold">Instalación</span>
-            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold">Pisos · Mesas · Manualidades · Color</span>
+        <div class="mt-6 flex flex-wrap gap-2.5">
+            <span class="rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs font-bold">Asesoría en obra</span>
+            <span class="rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs font-bold">Instalación certificada</span>
+            <span class="rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs font-bold">Pisos · Mesas · Colorimetría</span>
         </div>
     </header>
 
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <form method="post" class="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
             {% csrf_token %}
             <div>
-                <h2 class="text-xl font-extrabold text-[#313338]">Cuéntanos qué servicio necesitas</h2>
-                <p class="mt-1 text-sm text-slate-600">La solicitud no genera un cobro ni reserva una fecha.</p>
+                <h2 class="text-xl font-extrabold text-[#0F1E36]">Solicitar cotización de servicio</h2>
+                <p class="mt-1 text-sm text-slate-600">Sin cobro automático: evaluamos tu metraje y aplicación primero.</p>
             </div>
 
             {% for error in errores %}
-            <p class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-900" role="alert">{{ error }}</p>
+            <p class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-900" role="alert">{{ error }}</p>
             {% endfor %}
 
             <div class="grid gap-4 sm:grid-cols-2">
-                <label class="text-sm font-semibold text-[#313338]">
-                    Servicio
-                    <select name="tipo_servicio" required class="mt-1 block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                <label class="text-sm font-semibold text-[#0F1E36]">
+                    Tipo de servicio
+                    <select name="tipo_servicio" required class="sgd-input">
                         <option value="">Selecciona el servicio</option>
                         {% for value, label in tipos_servicio %}
                         <option value="{{ value }}" {% if form_data.tipo_servicio == value %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </label>
-                <label class="text-sm font-semibold text-[#313338]">
-                    Aplicación
-                    <select name="proyecto_servicio" required class="mt-1 block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
-                        <option value="">Selecciona el tipo de proyecto</option>
+                <label class="text-sm font-semibold text-[#0F1E36]">
+                    Aplicación del proyecto
+                    <select name="proyecto_servicio" required class="sgd-input">
+                        <option value="">Selecciona la aplicación</option>
                         {% for value, label in proyectos_servicio %}
                         <option value="{{ value }}" {% if form_data.proyecto_servicio == value %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </label>
-                <label class="text-sm font-semibold text-[#313338]">
+                <label class="text-sm font-semibold text-[#0F1E36]">
                     DNI o RUC
-                    <input name="cliente_documento" value="{{ form_data.cliente_documento }}" inputmode="numeric" pattern="([0-9]{8}|[0-9]{11})" maxlength="11" required class="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-3 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <input name="cliente_documento" value="{{ form_data.cliente_documento }}" inputmode="numeric" pattern="([0-9]{8}|[0-9]{11})" maxlength="11" required class="sgd-input">
                 </label>
-                <label class="text-sm font-semibold text-[#313338]">
+                <label class="text-sm font-semibold text-[#0F1E36]">
                     Nombre o razón social
-                    <input name="cliente_nombre" value="{{ form_data.cliente_nombre }}" maxlength="140" required class="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-3 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <input name="cliente_nombre" value="{{ form_data.cliente_nombre }}" maxlength="140" required class="sgd-input">
                 </label>
-                <label class="text-sm font-semibold text-[#313338] sm:col-span-2">
+                <label class="text-sm font-semibold text-[#0F1E36] sm:col-span-2">
                     Correo electrónico
-                    <input type="email" name="cliente_correo" value="{{ form_data.cliente_correo }}" maxlength="120" required class="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-3 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <input type="email" name="cliente_correo" value="{{ form_data.cliente_correo }}" maxlength="120" required class="sgd-input">
                 </label>
             </div>
 
-            <div class="rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-sm leading-6 text-indigo-950">
-                El personal coordinará los días y la tarifa diaria según el profesional asignado. Después se emitirá una proforma para revisar antes de confirmar el pago. No se mostrarán públicamente datos personales de contratistas.
+            <div class="rounded-xl border border-sky-200 bg-sky-50 p-4 text-xs leading-5 text-[#0F1E36]">
+                Nuestro equipo coordinará los días estimados y la tarifa diaria según tu metraje antes de emitir la proforma final.
             </div>
 
-            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-5 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] sm:w-auto">
-                Solicitar coordinación del servicio
-                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <button type="submit" class="sgd-svc-btn w-full sm:w-auto">
+                Enviar solicitud de servicio →
             </button>
         </form>
 
         <aside class="h-fit space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-lg font-extrabold text-[#313338]">Cómo funciona</h2>
+            <h2 class="text-lg font-extrabold text-[#0F1E36]">¿Cómo funciona?</h2>
             <ol class="space-y-4 text-sm text-slate-600">
-                <li class="flex gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-indigo-50 font-extrabold text-[#4752C4]">1</span><span>Indica asesoría o instalación y el tipo de proyecto.</span></li>
-                <li class="flex gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-indigo-50 font-extrabold text-[#4752C4]">2</span><span>Se coordinan profesional, días y tarifa diaria.</span></li>
-                <li class="flex gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-indigo-50 font-extrabold text-[#4752C4]">3</span><span>Revisa la proforma antes de confirmar el servicio.</span></li>
+                <li class="flex gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sky-50 font-extrabold text-[#166091]">1</span><span>Indica asesoría o instalación y el tipo de superficie.</span></li>
+                <li class="flex gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sky-50 font-extrabold text-[#166091]">2</span><span>Coordinamos especialista, días de trabajo y tarifa diaria.</span></li>
+                <li class="flex gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sky-50 font-extrabold text-[#166091]">3</span><span>Apruebas la proforma antes de iniciar.</span></li>
             </ol>
-            <a href="{% url 'catalog:store_front' %}" class="inline-flex font-bold text-[#4752C4] underline decoration-indigo-200 underline-offset-4 hover:text-[#313338] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">Volver al catálogo</a>
+            <a href="{% url 'catalog:store_front' %}" class="inline-flex text-sm font-bold text-[#166091] underline underline-offset-4 hover:text-[#0F1E36]">Volver al catálogo</a>
         </aside>
     </div>
 </section>

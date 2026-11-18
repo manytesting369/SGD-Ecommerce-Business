@@ -1,55 +1,339 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Nueva receta de color | SIGCE{% endblock %}
+{% block title %}{% if editando %}Editar receta: {{ paleta.nombre }}{% else %}Nueva receta de color{% endif %} | SGD Global Import{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-3xl space-y-6">
-    <div>
-        <a href="{% url 'palette_lab:lista' %}" class="text-sm font-semibold text-[#4752C4] hover:underline">← Volver a recetas</a>
-        <p class="mt-5 text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Laboratorio de color</p>
-        <h1 class="mt-1 text-3xl font-bold text-[#313338]">Crear receta</h1>
-        <p class="mt-2 text-slate-600">Completa los datos de la receta. Los gramos se calculan a partir de la dosificación y el peso de resina.</p>
+<style>
+    .sgd-lab-hero {
+        background: linear-gradient(120deg, #0F1E36 0%, #166091 100%);
+        border-radius: 1.35rem;
+        padding: 1.75rem 2rem;
+        color: #FFFFFF;
+        box-shadow: 0 16px 32px -12px rgba(15, 30, 54, 0.35);
+    }
+    .sgd-swatch-btn {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 0 0 1px #CBD5E1;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+    .sgd-swatch-btn:hover { transform: scale(1.12); }
+</style>
+
+<section class="mx-auto max-w-5xl space-y-6">
+    <div class="sgd-lab-hero flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <a href="{% url 'palette_lab:lista' %}" class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-sky-200 hover:text-white">
+                ← Volver al laboratorio
+            </a>
+            <h1 class="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+                {% if editando %}Editar receta: {{ paleta.nombre }}{% else %}Formular nueva receta de color{% endif %}
+            </h1>
+            <p class="mt-1 text-sm text-slate-200">
+                Configura el tono, dosificación (1% a 3%) y reparto de pigmentos. Los gramos exactos se calculan automáticamente.
+            </p>
+        </div>
     </div>
 
-    <form method="post" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        {% csrf_token %}
-        {{ formset.management_form }}
-        {% if form.non_field_errors %}<div class="rounded-lg bg-red-50 p-3 text-sm text-red-800">{{ form.non_field_errors }}</div>{% endif %}
-        {% if formset.non_form_errors %}<div class="rounded-lg bg-red-50 p-3 text-sm text-red-800">{{ formset.non_form_errors }}</div>{% endif %}
+    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <form method="post" class="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% if form.non_field_errors %}<div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{{ form.non_field_errors }}</div>{% endif %}
+            {% if formset.non_form_errors %}<div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{{ formset.non_form_errors }}</div>{% endif %}
 
-        <fieldset class="space-y-4">
-            <legend class="text-lg font-semibold text-[#313338]">Datos de la receta</legend>
-            {% for field in form %}
-            <div>
-                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ field.label }}</label>
-                <div class="mt-1">{{ field }}</div>
-                {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
-                {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
-            </div>
-            {% endfor %}
-        </fieldset>
+            <fieldset class="space-y-4">
+                <legend class="text-base font-extrabold text-[#0F1E36]">1. Datos base y tono de referencia</legend>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label for="{{ form.nombre.id_for_label }}" class="block text-sm font-semibold text-[#0F1E36]">{{ form.nombre.label }}</label>
+                        <div class="mt-1">{{ form.nombre }}</div>
+                        {% for error in form.nombre.errors %}<p class="mt-1 text-xs font-semibold text-[#E11D48]">{{ error }}</p>{% endfor %}
+                    </div>
 
-        <fieldset class="space-y-4 border-t border-slate-200 pt-5">
-            <legend class="text-lg font-semibold text-[#313338]">Pigmentos</legend>
-            <p class="text-sm text-slate-600">La participación de todos los pigmentos debe sumar 100%.</p>
-            {% for detail_form in formset %}
-            <div class="grid gap-3 rounded-lg bg-[#F2F3F5] p-4 sm:grid-cols-2">
-                {% for hidden in detail_form.hidden_fields %}{{ hidden }}{% endfor %}
-                {% for field in detail_form.visible_fields %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ field.label }}</label>
-                    <div class="mt-1">{{ field }}</div>
-                    {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+                    <div>
+                        <label for="{{ form.superficie_3d.id_for_label }}" class="block text-sm font-semibold text-[#0F1E36]">{{ form.superficie_3d.label }}</label>
+                        <div class="mt-1">{{ form.superficie_3d }}</div>
+                        {% for error in form.superficie_3d.errors %}<p class="mt-1 text-xs font-semibold text-[#E11D48]">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.color_resultante_hex.id_for_label }}" class="block text-sm font-semibold text-[#0F1E36]">{{ form.color_resultante_hex.label }}</label>
+                        <div class="mt-1 flex items-center gap-2.5">
+                            {{ form.color_resultante_hex }}
+                            <input type="text" id="hex-text-input" maxlength="7" value="#5865F2" aria-label="Código hexadecimal manual" class="w-28 rounded-xl border border-slate-300 px-3 py-2.5 font-mono text-sm font-bold text-[#0F1E36] uppercase focus:border-[#166091] focus:outline-none">
+                        </div>
+                        <div class="mt-2.5 flex flex-wrap gap-1.5" aria-label="Tonos rápidos">
+                            <button type="button" data-quick-hex="#26C6DA" title="Mica Turquesa" class="sgd-swatch-btn bg-[#26C6DA]"></button>
+                            <button type="button" data-quick-hex="#0C2478" title="Tinta Zafiro" class="sgd-swatch-btn bg-[#0C2478]"></button>
+                            <button type="button" data-quick-hex="#FFFFFF" title="Mica Blanca" class="sgd-swatch-btn bg-white"></button>
+                            <button type="button" data-quick-hex="#D4AF37" title="Mica Dorada" class="sgd-swatch-btn bg-[#D4AF37]"></button>
+                            <button type="button" data-quick-hex="#10B981" title="Verde Esmeralda" class="sgd-swatch-btn bg-[#10B981]"></button>
+                            <button type="button" data-quick-hex="#E11D48" title="Rojo Rubí" class="sgd-swatch-btn bg-[#E11D48]"></button>
+                            <button type="button" data-quick-hex="#1F2937" title="Negro Obsidiana" class="sgd-swatch-btn bg-[#1F2937]"></button>
+                        </div>
+                        {% for error in form.color_resultante_hex.errors %}<p class="mt-1 text-xs font-semibold text-[#E11D48]">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.peso_resina_kg.id_for_label }}" class="block text-sm font-semibold text-[#0F1E36]">{{ form.peso_resina_kg.label }}</label>
+                        <div class="mt-1">{{ form.peso_resina_kg }}</div>
+                        {% for error in form.peso_resina_kg.errors %}<p class="mt-1 text-xs font-semibold text-[#E11D48]">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.dosificacion_pct.id_for_label }}" class="block text-sm font-semibold text-[#0F1E36]">{{ form.dosificacion_pct.label }}</label>
+                        <div class="mt-1">{{ form.dosificacion_pct }}</div>
+                        <p class="mt-1 text-[11px] text-slate-500">{{ form.dosificacion_pct.help_text }}</p>
+                        {% for error in form.dosificacion_pct.errors %}<p class="mt-1 text-xs font-semibold text-[#E11D48]">{{ error }}</p>{% endfor %}
+                    </div>
                 </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </fieldset>
 
-        <div class="flex flex-wrap gap-3 border-t border-slate-200 pt-5">
-            <button type="submit" class="rounded-lg bg-[#5865F2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#4752C4]">Guardar receta</button>
-            <a href="{% url 'palette_lab:lista' %}" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</a>
-        </div>
-    </form>
+                <div class="grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 sm:items-center">
+                    <label for="{{ form.preparado_empresa.id_for_label }}" class="flex cursor-pointer items-center gap-2.5 text-sm font-bold text-[#0F1E36]">
+                        {{ form.preparado_empresa }}
+                        <span>{{ form.preparado_empresa.label }}</span>
+                    </label>
+                    <div>
+                        <label for="{{ form.cargo_preparacion.id_for_label }}" class="block text-xs font-bold uppercase tracking-wide text-slate-600">{{ form.cargo_preparacion.label }}</label>
+                        <div class="mt-1">{{ form.cargo_preparacion }}</div>
+                        {% for error in form.cargo_preparacion.errors %}<p class="mt-1 text-xs font-semibold text-[#E11D48]">{{ error }}</p>{% endfor %}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="space-y-4 border-t border-slate-200 pt-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <legend class="text-base font-extrabold text-[#0F1E36]">2. Pigmentos de la mezcla</legend>
+                        <p class="text-xs text-slate-600">La suma de porcentajes activos debe ser exactamente 100%.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="pigment-sum-badge" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-[#0F1E36]">Suma: 0%</span>
+                        <button type="button" id="btn-split-100" class="rounded-lg border border-[#166091] px-2.5 py-1 text-xs font-bold text-[#166091] hover:bg-sky-50">
+                            Repartir 100%
+                        </button>
+                    </div>
+                </div>
+
+                <div id="pigment-forms-container" class="space-y-3">
+                    {% for detail_form in formset %}
+                    <div class="pigment-row grid gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-[1fr_10rem_auto] sm:items-end">
+                        {% for hidden in detail_form.hidden_fields %}{{ hidden }}{% endfor %}
+                        <div>
+                            <label for="{{ detail_form.pigmento.id_for_label }}" class="block text-xs font-bold text-slate-700">{{ detail_form.pigmento.label }}</label>
+                            <div class="mt-1">{{ detail_form.pigmento }}</div>
+                            {% for error in detail_form.pigmento.errors %}<p class="mt-1 text-xs text-[#E11D48]">{{ error }}</p>{% endfor %}
+                        </div>
+                        <div>
+                            <label for="{{ detail_form.porcentaje.id_for_label }}" class="block text-xs font-bold text-slate-700">Porcentaje (%)</label>
+                            <div class="mt-1">{{ detail_form.porcentaje }}</div>
+                            {% for error in detail_form.porcentaje.errors %}<p class="mt-1 text-xs text-[#E11D48]">{{ error }}</p>{% endfor %}
+                        </div>
+                        {% if detail_form.DELETE %}
+                        <label class="inline-flex items-center gap-1.5 pb-2 text-xs font-bold text-rose-700">
+                            {{ detail_form.DELETE }} Quitar
+                        </label>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" id="btn-add-pigment" class="inline-flex items-center gap-1.5 rounded-xl border border-dashed border-[#166091] px-4 py-2 text-xs font-extrabold text-[#166091] hover:bg-sky-50">
+                    + Agregar otro pigmento
+                </button>
+            </fieldset>
+
+            <div class="flex flex-wrap gap-3 border-t border-slate-200 pt-5">
+                <button type="submit" class="rounded-xl bg-[#0F1E36] px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#166091]">
+                    {% if editando %}Guardar cambios{% else %}Guardar receta{% endif %}
+                </button>
+                <a href="{% url 'palette_lab:lista' %}" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+
+        <!-- Vista previa y calculadora en vivo -->
+        <aside class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+            <h2 class="text-base font-extrabold text-[#0F1E36]">Vista previa en vivo</h2>
+            <div id="form-preview-swatch" class="h-24 w-full rounded-xl border border-slate-200 shadow-inner transition-colors" style="background-color: #5865F2;"></div>
+            <div class="rounded-xl bg-slate-50 p-3.5 text-sm border border-slate-200/70 space-y-1">
+                <p id="form-calc-result" class="font-extrabold text-[#0F1E36]">Pigmento total estimado a dosificar: — g</p>
+                <p class="text-[11px] text-slate-500">Fórmula: peso_resina_kg × 1000 × dosificacion_pct / 100</p>
+            </div>
+            <div class="rounded-xl border border-sky-200 bg-sky-50 p-3.5 text-xs leading-5 text-[#0F1E36]">
+                <p role="status" aria-live="polite">
+                    <strong id="preparation-status">Receta gratis (S/ 0.00):</strong>
+                    <span id="preparation-description">La receta se guarda con sus gramos calculados, sin cargo de preparación.</span>
+                </p>
+                <p class="mt-1.5 text-slate-700">
+                    <strong>Servicio preparado (RF-08):</strong> Marca «Solicita preparación en tienda» para habilitar el cargo por mezcla lista.
+                </p>
+            </div>
+        </aside>
+    </div>
 </section>
+
+<!-- Template oculto para agregar más pigmentos dinámicamente -->
+<template id="empty-pigment-row">
+    <div class="pigment-row grid gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-[1fr_10rem_auto] sm:items-end">
+        {% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+        <div>
+            <label for="{{ formset.empty_form.pigmento.id_for_label }}" class="block text-xs font-bold text-slate-700">{{ formset.empty_form.pigmento.label }}</label>
+            <div class="mt-1">{{ formset.empty_form.pigmento }}</div>
+        </div>
+        <div>
+            <label for="{{ formset.empty_form.porcentaje.id_for_label }}" class="block text-xs font-bold text-slate-700">Porcentaje (%)</label>
+            <div class="mt-1">{{ formset.empty_form.porcentaje }}</div>
+        </div>
+        {% if formset.empty_form.DELETE %}
+        <label class="inline-flex items-center gap-1.5 pb-2 text-xs font-bold text-rose-700">
+            {{ formset.empty_form.DELETE }} Quitar
+        </label>
+        {% endif %}
+    </div>
+</template>
+
+<script>
+    (() => {
+        const colorInput = document.getElementById("id_color_resultante_hex");
+        const hexTextInput = document.getElementById("hex-text-input");
+        const pesoInput = document.getElementById("id_peso_resina_kg");
+        const dosisInput = document.getElementById("id_dosificacion_pct");
+        const swatch = document.getElementById("form-preview-swatch");
+        const result = document.getElementById("form-calc-result");
+        const preparedInput = document.getElementById("id_preparado_empresa");
+        const chargeInput = document.getElementById("id_cargo_preparacion");
+        const preparationStatus = document.getElementById("preparation-status");
+        const preparationDescription = document.getElementById("preparation-description");
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("hex") && colorInput) colorInput.value = params.get("hex");
+        if (params.get("superficie")) {
+            const superficieField = document.getElementById("id_superficie_3d");
+            if (superficieField) {
+                for (const opt of superficieField.options) {
+                    if (opt.value.toLowerCase() === params.get("superficie").toLowerCase()) {
+                        opt.selected = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (params.get("dosificacion") && dosisInput) {
+            dosisInput.value = params.get("dosificacion");
+        }
+
+        const syncColor = (hex) => {
+            if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return;
+            const upper = hex.toUpperCase();
+            if (colorInput) colorInput.value = upper;
+            if (hexTextInput) hexTextInput.value = upper;
+            if (swatch) swatch.style.backgroundColor = upper;
+        };
+
+        const updatePreview = () => {
+            if (colorInput) syncColor(colorInput.value);
+            if (pesoInput && dosisInput && result) {
+                const peso = parseFloat(pesoInput.value);
+                const dosis = parseFloat(dosisInput.value);
+                if (!isNaN(peso) && peso > 0 && !isNaN(dosis) && dosis > 0) {
+                    const gramos = (peso * 1000 * dosis / 100).toFixed(2);
+                    result.textContent = "Pigmento total estimado a dosificar: " + gramos + " g";
+                } else {
+                    result.textContent = "Pigmento total estimado a dosificar: — g";
+                }
+            }
+            if (preparedInput && chargeInput && preparationStatus && preparationDescription) {
+                chargeInput.disabled = !preparedInput.checked;
+                if (!preparedInput.checked) chargeInput.value = "0.00";
+                preparationStatus.textContent = preparedInput.checked
+                    ? "Servicio preparado seleccionado (RF-08):"
+                    : "Receta gratis (S/ 0.00):";
+                preparationDescription.textContent = preparedInput.checked
+                    ? "Ingresa el cargo por preparación en tienda."
+                    : "La receta se guarda con sus gramos calculados, sin cargo de preparación.";
+            }
+        };
+
+        if (colorInput) colorInput.addEventListener("input", () => syncColor(colorInput.value));
+        if (hexTextInput) hexTextInput.addEventListener("input", () => syncColor(hexTextInput.value));
+        document.querySelectorAll("[data-quick-hex]").forEach((btn) => {
+            btn.addEventListener("click", () => syncColor(btn.dataset.quickHex));
+        });
+        if (pesoInput) pesoInput.addEventListener("input", updatePreview);
+        if (dosisInput) dosisInput.addEventListener("input", updatePreview);
+        if (preparedInput) preparedInput.addEventListener("change", updatePreview);
+        updatePreview();
+
+        // Gestión dinámica de pigmentos + suma al 100%
+        const container = document.getElementById("pigment-forms-container");
+        const totalFormsInput = document.getElementById("id_pigmentos-TOTAL_FORMS");
+        const sumBadge = document.getElementById("pigment-sum-badge");
+        const addBtn = document.getElementById("btn-add-pigment");
+        const splitBtn = document.getElementById("btn-split-100");
+        const emptyTpl = document.getElementById("empty-pigment-row");
+
+        const updateSum = () => {
+            if (!container || !sumBadge) return;
+            let total = 0;
+            container.querySelectorAll(".pigment-row").forEach((row) => {
+                const del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+                const sel = row.querySelector('select[name$="-pigmento"]');
+                const pct = row.querySelector('input[name$="-porcentaje"]');
+                if (del && del.checked) return;
+                if (sel && sel.value && pct && pct.value) {
+                    const val = parseFloat(pct.value);
+                    if (!isNaN(val)) total += val;
+                }
+            });
+            const rounded = Math.round(total * 100) / 100;
+            sumBadge.textContent = `Suma: ${rounded}%`;
+            sumBadge.className = rounded === 100
+                ? "rounded-full bg-emerald-50 px-3 py-1 text-xs font-extrabold text-[#16A34A]"
+                : "rounded-full bg-amber-50 px-3 py-1 text-xs font-extrabold text-amber-800";
+        };
+
+        if (container) {
+            container.addEventListener("input", updateSum);
+            container.addEventListener("change", updateSum);
+        }
+
+        if (splitBtn && container) {
+            splitBtn.addEventListener("click", () => {
+                const activeRows = Array.from(container.querySelectorAll(".pigment-row")).filter((row) => {
+                    const del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+                    const sel = row.querySelector('select[name$="-pigmento"]');
+                    return !(del && del.checked) && sel && sel.value;
+                });
+                if (!activeRows.length) return;
+                const base = Math.floor((10000 / activeRows.length)) / 100;
+                let resto = Math.round((100 - base * activeRows.length) * 100) / 100;
+                activeRows.forEach((row, idx) => {
+                    const pct = row.querySelector('input[name$="-porcentaje"]');
+                    if (pct) {
+                        const val = idx === 0 ? (base + resto).toFixed(2) : base.toFixed(2);
+                        pct.value = val;
+                    }
+                });
+                updateSum();
+            });
+        }
+
+        if (addBtn && container && totalFormsInput && emptyTpl) {
+            addBtn.addEventListener("click", () => {
+                const idx = Number(totalFormsInput.value);
+                const html = emptyTpl.innerHTML.replace(/__prefix__/g, String(idx));
+                container.insertAdjacentHTML("beforeend", html);
+                totalFormsInput.value = String(idx + 1);
+            });
+        }
+
+        updateSum();
+    })();
+</script>
 {% endblock %}

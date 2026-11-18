@@ -176,6 +176,42 @@ class CompraYCarritoTests(TestCase):
             {"cantidad": cantidad},
         )
 
+    def test_checkout_muestra_detalle_tecnico_y_conserva_datos_si_falla_validacion(self):
+        self._agregar_presentacion_al_carrito()
+
+        get_response = self.client.get("/carrito/checkout/")
+
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual(
+            get_response.context["resumen"]["total_resina_a_kg"],
+            Decimal("10.00"),
+        )
+        self.assertEqual(
+            get_response.context["resumen"]["total_catalizador_b_kg"],
+            Decimal("5.00"),
+        )
+        self.assertContains(get_response, "Resina (A)")
+        self.assertContains(get_response, "Catalizador (B)")
+        self.assertContains(get_response, "Entrega Antidéficit")
+        self.assertContains(get_response, "Seguimiento postventa")
+        self.assertContains(get_response, "Simulación Yape / Plin empresarial")
+
+        datos = self._datos_checkout()
+        datos.update(
+            {
+                "cliente_documento": "87654321",
+                "cliente_nombre": "Cliente de validación",
+                "cliente_correo": "validacion@example.test",
+                "metodo_pago_simulado": "TRANSFERENCIA_B2B",
+            }
+        )
+        response = self.client.post("/carrito/checkout/", datos)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="87654321"')
+        self.assertContains(response, 'value="Cliente de validación"')
+        self.assertContains(response, 'value="validacion@example.test"')
+
     def test_empaquetar_calculo_en_carrito_agrega_kit_indivisible(self):
         calculo = ejecutar_calculo_medidas(
             producto_resina=self.resina,
@@ -545,6 +581,7 @@ class CompraYCarritoTests(TestCase):
         self.assertContains(response, "Kit 15 kg")
         self.assertContains(response, "data-cart-add")
         self.assertContains(response, "Ver carrito completo")
+        self.assertContains(response, 'fetch("/carrito/"')
         self.assertEqual(response.context["cantidad_articulos"], 1)
         self.assertEqual(response.context["subtotal"], Decimal("45.00"))
 

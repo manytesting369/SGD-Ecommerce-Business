@@ -1,11 +1,16 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Acceso restringido | SIGCE{% endblock %}
+{% block title %}Acceso restringido | SGD Global Import{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-xl rounded-xl border border-slate-200 bg-white p-8 text-center">
-    <h1 class="text-2xl font-extrabold text-[#313338]">Comprobante no disponible</h1>
-    <p class="mt-2 text-sm text-slate-600">Inicia el proceso de compra desde esta sesión o accede con una cuenta del equipo autorizada.</p>
-    <a href="{% url 'catalog:store_front' %}" class="mt-5 inline-flex rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#4752C4]">Volver al catálogo</a>
+<section class="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+    <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-sky-50 text-[#166091]">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-7 w-7"><path d="M7 11V8a5 5 0 0 1 10 0v3m-11 0h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <h1 class="mt-4 text-2xl font-extrabold text-[#0F1E36]">Comprobante no disponible</h1>
+    <p class="mt-2 text-sm text-slate-600">Inicia el proceso de compra desde esta sesión o accede con una cuenta autorizada.</p>
+    <a href="{% url 'catalog:store_front' %}" class="mt-6 inline-flex rounded-xl bg-[#0F1E36] px-5 py-2.5 text-sm font-extrabold text-white transition hover:bg-[#166091]">
+        Volver al catálogo
+    </a>
 </section>
 {% endblock %}

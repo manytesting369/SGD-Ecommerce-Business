@@ -27,6 +27,22 @@ class LaboratorioColorTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Recetas de color")
+        self.assertContains(response, "Perspectiva / rotación 3D")
+        self.assertContains(response, "Mica perlada")
+        self.assertContains(response, "Tinta translúcida")
+        self.assertContains(response, "Usar este color en nueva receta")
+
+    def test_formulario_muestra_previsualizacion_y_dosificacion_en_vivo(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.get("/paletas/nueva/?hex=%230C2478&superficie=PISO")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="form-preview-swatch"')
+        self.assertContains(response, 'id="form-calc-result"')
+        self.assertContains(response, "Receta gratis (S/ 0.00)")
+        self.assertContains(response, "Servicio preparado (RF-08)")
+        self.assertContains(response, 'params.get("hex")')
 
     def test_crear_receta_calcula_gramos_de_pigmento(self):
         self.client.force_login(self.staff)
@@ -56,6 +72,51 @@ class LaboratorioColorTests(TestCase):
         paleta = Paleta.objects.get()
         detalle = paleta.pigmentos.get()
         self.assertEqual(detalle.gramos, Decimal("200.00"))
+
+    def test_editar_y_eliminar_receta(self):
+        self.client.force_login(self.staff)
+        paleta = Paleta.objects.create(
+            nombre="Original",
+            superficie_3d=Paleta.Superficie.MESA_RIO,
+            color_resultante_hex="#26C6DA",
+            peso_resina_kg=Decimal("5.00"),
+            dosificacion_pct=Decimal("2.00"),
+        )
+        paleta.pigmentos.create(
+            pigmento=self.pigmento,
+            porcentaje=Decimal("100.00"),
+            gramos=Decimal("100.00"),
+        )
+        detalle = paleta.pigmentos.get()
+
+        response = self.client.post(
+            f"/paletas/{paleta.pk}/editar/",
+            {
+                "nombre": "Actualizada",
+                "superficie_3d": Paleta.Superficie.PISO,
+                "color_resultante_hex": "#0C2478",
+                "peso_resina_kg": "10.00",
+                "dosificacion_pct": "3.00",
+                "preparado_empresa": "on",
+                "cargo_preparacion": "15.00",
+                "pigmentos-TOTAL_FORMS": "1",
+                "pigmentos-INITIAL_FORMS": "1",
+                "pigmentos-MIN_NUM_FORMS": "0",
+                "pigmentos-MAX_NUM_FORMS": "1000",
+                "pigmentos-0-id": str(detalle.pk),
+                "pigmentos-0-paleta": str(paleta.pk),
+                "pigmentos-0-pigmento": str(self.pigmento.pk),
+                "pigmentos-0-porcentaje": "100.00",
+            },
+        )
+        self.assertRedirects(response, "/paletas/")
+        paleta.refresh_from_db()
+        self.assertEqual(paleta.nombre, "Actualizada")
+        self.assertEqual(paleta.pigmentos.get().gramos, Decimal("300.00"))
+
+        delete_response = self.client.post(f"/paletas/{paleta.pk}/eliminar/")
+        self.assertRedirects(delete_response, "/paletas/")
+        self.assertFalse(Paleta.objects.filter(pk=paleta.pk).exists())
 
     def test_solo_personal_autorizado_puede_guardar_recetas(self):
         response = self.client.get("/paletas/nueva/")

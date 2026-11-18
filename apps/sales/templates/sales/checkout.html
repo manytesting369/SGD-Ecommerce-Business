@@ -1,67 +1,164 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Finalizar compra | SIGCE{% endblock %}
+{% block title %}Finalizar compra | SGD Global Import{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-4xl space-y-6">
-    <header>
-        <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Pago de prueba o proforma B2B</p>
-        <h1 class="mt-1 text-3xl font-extrabold text-[#313338]">Finalizar compra</h1>
+<style>
+    .sgd-step-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 1.25rem;
+        padding: 1rem 1.35rem;
+        box-shadow: 0 4px 16px -6px rgba(15, 30, 54, 0.08);
+    }
+    .sgd-input {
+        margin-top: 0.35rem;
+        display: block;
+        width: 100%;
+        border-radius: 0.75rem;
+        border: 1px solid #CBD5E1;
+        background: #FFFFFF;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.875rem;
+        color: #0F1E36;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .sgd-input:focus {
+        outline: none;
+        border-color: #166091;
+        box-shadow: 0 0 0 3px rgba(22, 96, 145, 0.18);
+    }
+    .sgd-summary-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        box-shadow: 0 14px 30px -12px rgba(15, 30, 54, 0.14);
+    }
+    .sgd-summary-head {
+        background: linear-gradient(120deg, #0F1E36 0%, #166091 100%);
+        color: #FFFFFF;
+        padding: 1.15rem 1.35rem;
+    }
+    .sgd-btn-confirm {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.9rem 1.6rem;
+        border-radius: 0.9rem;
+        background: #E11D48;
+        color: #FFFFFF;
+        font-size: 0.9rem;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 10px 22px -8px rgba(225, 29, 72, 0.45);
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .sgd-btn-confirm:hover {
+        background: #BE123C;
+        transform: translateY(-1px);
+    }
+</style>
+
+<section class="mx-auto max-w-5xl space-y-6">
+    <!-- Barra de progreso -->
+    <nav aria-label="Pasos de compra" class="sgd-step-bar">
+        <ol class="flex flex-wrap items-center gap-3 text-xs font-bold sm:text-sm">
+            <li class="inline-flex items-center gap-2 text-[#16A34A]">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-emerald-100 text-xs font-extrabold text-[#16A34A]">✓</span>
+                <a href="{% url 'sales:carrito' %}" class="hover:underline">Bolsa de compra</a>
+            </li>
+            <li aria-hidden="true" class="text-slate-300">→</li>
+            <li class="inline-flex items-center gap-2 text-[#0F1E36]">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-[#0F1E36] text-xs font-extrabold text-white">2</span>
+                Datos y pago
+            </li>
+            <li aria-hidden="true" class="text-slate-300">→</li>
+            <li class="inline-flex items-center gap-2 text-slate-400">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-slate-100 text-xs text-slate-500">3</span>
+                Confirmación
+            </li>
+        </ol>
+        <span class="rounded-full bg-sky-50 px-3 py-1 text-xs font-extrabold text-[#166091]">Compra protegida</span>
+    </nav>
+
+    <header class="px-1">
+        <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-[#166091]">Pago de prueba o proforma B2B</p>
+        <h1 class="mt-1 text-3xl font-extrabold text-[#0F1E36]">Finalizar compra</h1>
+        <p class="mt-1 text-sm text-slate-600">Completa tus datos de facturación y selecciona el medio de pago.</p>
     </header>
 
     {% for error in errores %}
-    <p class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-900" role="alert">{{ error }}</p>
+    <p class="rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-sm font-medium text-rose-900" role="alert">{{ error }}</p>
     {% endfor %}
 
     {% if resumen and resumen.lineas %}
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <form method="post" class="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <form method="post" class="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
             {% csrf_token %}
-            <div class="grid gap-4 sm:grid-cols-2">
-                <label class="text-sm font-semibold text-[#313338]">
-                    DNI o RUC
-                    <input name="cliente_documento" inputmode="numeric" pattern="([0-9]{8}|[0-9]{11})" maxlength="11" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
-                </label>
-                <label class="text-sm font-semibold text-[#313338]">
-                    Nombre o razón social
-                    <input name="cliente_nombre" maxlength="140" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
-                </label>
-                <label class="text-sm font-semibold text-[#313338] sm:col-span-2">
-                    Correo electrónico
-                    <input type="email" name="cliente_correo" maxlength="120" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
-                </label>
-                <label class="text-sm font-semibold text-[#313338]">
-                    Modalidad
-                    <select name="modalidad" id="modalidad-compra" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
-                        <option value="PAGADO" {% if form_data.modalidad == "PAGADO" %}selected{% endif %}>Pago de prueba</option>
-                        <option value="PROFORMA" {% if form_data.modalidad == "PROFORMA" %}selected{% endif %}>Proforma corporativa B2B</option>
-                    </select>
-                </label>
-                <label class="text-sm font-semibold text-[#313338]">
-                    Medio de pago simulado
-                    <select name="metodo_pago_simulado" id="metodo-pago" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
-                        <option value="TARJETA_PRUEBA" {% if form_data.metodo_pago_simulado == "TARJETA_PRUEBA" %}selected{% endif %}>Tarjeta de prueba</option>
-                        <option value="YAPE_PRUEBA" {% if form_data.metodo_pago_simulado == "YAPE_PRUEBA" %}selected{% endif %}>Yape de prueba</option>
-                        <option value="TRANSFERENCIA_B2B" {% if form_data.metodo_pago_simulado == "TRANSFERENCIA_B2B" %}selected{% endif %}>Transferencia B2B</option>
-                    </select>
-                </label>
+            <div>
+                <h2 class="text-base font-extrabold text-[#0F1E36]">1. Datos del cliente o empresa</h2>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <label class="text-sm font-semibold text-[#0F1E36]">
+                        DNI o RUC
+                        <input name="cliente_documento" value="{{ form_data.cliente_documento }}" inputmode="numeric" pattern="([0-9]{8}|[0-9]{11})" maxlength="11" placeholder="8 u 11 dígitos" required class="sgd-input">
+                    </label>
+                    <label class="text-sm font-semibold text-[#0F1E36]">
+                        Nombre o razón social
+                        <input name="cliente_nombre" value="{{ form_data.cliente_nombre }}" maxlength="140" placeholder="Nombre completo o empresa" required class="sgd-input">
+                    </label>
+                    <label class="text-sm font-semibold text-[#0F1E36] sm:col-span-2">
+                        Correo electrónico para envío de comprobante
+                        <input type="email" name="cliente_correo" value="{{ form_data.cliente_correo }}" maxlength="120" placeholder="correo@ejemplo.com" required class="sgd-input">
+                    </label>
+                </div>
             </div>
-            <fieldset class="rounded-xl border border-slate-200 p-4">
-                <legend class="px-1 text-sm font-bold text-[#313338]">¿Quieres coordinar asesoría o instalación?</legend>
-                <p class="mb-3 text-xs leading-5 text-slate-600">El servicio puede agregarse a esta proforma. El equipo coordinará profesional, días y tarifa diaria antes de confirmar el importe.</p>
+
+            <div class="border-t border-slate-100 pt-5">
+                <h2 class="text-base font-extrabold text-[#0F1E36]">2. Modalidad y medio de pago</h2>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <label class="text-sm font-semibold text-[#0F1E36]">
+                        Modalidad de orden
+                        <select name="modalidad" id="modalidad-compra" class="sgd-input">
+                            <option value="PAGADO" {% if form_data.modalidad == "PAGADO" %}selected{% endif %}>Pago inmediato (de prueba)</option>
+                            <option value="PROFORMA" {% if form_data.modalidad == "PROFORMA" %}selected{% endif %}>Proforma corporativa B2B</option>
+                        </select>
+                    </label>
+                    <label class="text-sm font-semibold text-[#0F1E36]">
+                        Medio de pago simulado
+                        <select name="metodo_pago_simulado" id="metodo-pago" class="sgd-input">
+                            <option value="TARJETA_PRUEBA" {% if form_data.metodo_pago_simulado == "TARJETA_PRUEBA" %}selected{% endif %}>Tarjeta de prueba</option>
+                            <option value="YAPE_PRUEBA" {% if form_data.metodo_pago_simulado == "YAPE_PRUEBA" %}selected{% endif %}>Yape de prueba</option>
+                            <option value="TRANSFERENCIA_B2B" {% if form_data.metodo_pago_simulado == "TRANSFERENCIA_B2B" %}selected{% endif %}>Transferencia B2B</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="contexto-medio-pago" class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-700" aria-live="polite"></div>
+            </div>
+
+            <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
+                <legend class="px-1.5 text-sm font-extrabold text-[#0F1E36]">3. ¿Deseas sumar asesoría o instalación? (Opcional)</legend>
+                <p class="mb-3 text-xs leading-5 text-slate-600">Si agregas un servicio, tu orden pasa como proforma para coordinar días y tarifa diaria antes de cobrarlo.</p>
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <label class="text-sm font-semibold text-[#313338]">
-                        Servicio (opcional)
-                        <select name="tipo_servicio" id="servicio-pedido" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <label class="text-sm font-semibold text-[#0F1E36]">
+                        Servicio técnico
+                        <select name="tipo_servicio" id="servicio-pedido" class="sgd-input">
                             <option value="">Solo materiales</option>
                             {% for value, label in tipos_servicio %}
                             <option value="{{ value }}" {% if form_data.tipo_servicio == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </label>
-                    <label class="text-sm font-semibold text-[#313338]">
-                        Aplicación del servicio
-                        <select name="proyecto_servicio" id="proyecto-servicio" class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+                    <label class="text-sm font-semibold text-[#0F1E36]">
+                        Tipo de proyecto
+                        <select name="proyecto_servicio" id="proyecto-servicio" class="sgd-input">
                             <option value="">Sin servicio</option>
                             {% for value, label in proyectos_servicio %}
                             <option value="{{ value }}" {% if form_data.proyecto_servicio == value %}selected{% endif %}>{{ label }}</option>
@@ -70,37 +167,63 @@
                     </label>
                 </div>
             </fieldset>
-            <p class="rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs leading-5 text-indigo-950">
-                Entorno académico de prueba. No ingreses números de tarjeta, códigos de seguridad ni datos bancarios. No se realiza un cobro real.
+
+            <p id="nota-proforma" class="hidden rounded-xl border border-sky-200 bg-sky-50 p-3.5 text-xs leading-5 text-[#0F1E36]">
+                La proforma B2B reserva tu cotización sin descontar stock hasta que el equipo valide el abono.
             </p>
-            <p id="nota-proforma" class="hidden rounded-lg border border-indigo-200 bg-[#F2F3F5] p-3 text-sm text-[#313338]">
-                La proforma B2B no descuenta inventario hasta que el personal autorizado confirme el pago. Los pisos sanitarios se describen según el catálogo, sin sustituir la evaluación normativa del proyecto.
+            <p id="nota-servicio" class="hidden rounded-xl border border-sky-200 bg-sky-50 p-3.5 text-xs leading-5 text-[#0F1E36]" role="status">
+                Esta solicitud se procesa como proforma: no se cobra el servicio hasta coordinar días y tarifa con el especialista.
             </p>
-            <p id="nota-servicio" class="hidden rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm leading-5 text-indigo-950" role="status">
-                Esta solicitud se procesa como proforma. No se cobrará el servicio hasta coordinar días y tarifa diaria con el profesional asignado.
-            </p>
-            <button type="submit" class="rounded-lg bg-[#5865F2] px-5 py-3 text-sm font-bold text-white hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-                Crear pedido de prueba
-            </button>
+
+            <div class="flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-[11px] text-slate-500">
+                    Entorno de demostración: no ingreses números de tarjeta reales ni claves bancarias.
+                </p>
+                <button type="submit" class="sgd-btn-confirm">
+                    Confirmar pedido →
+                </button>
+            </div>
         </form>
 
-        <aside class="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-lg font-bold text-[#313338]">Resumen del pedido</h2>
-            <ul class="mt-4 space-y-3 text-sm">
-                {% for linea in resumen.lineas %}
-                <li class="flex justify-between gap-3">
-                    <span class="text-slate-600">{{ linea.cantidad }} × {{ linea.presentacion.nombre_envase }}</span>
-                    <strong class="whitespace-nowrap">S/ {{ linea.subtotal }}</strong>
-                </li>
-                {% endfor %}
-            </ul>
-            <p class="mt-4 flex justify-between border-t border-slate-200 pt-4 font-bold"><span>Total estimado</span><span>S/ {{ resumen.subtotal }}</span></p>
+        <aside class="sgd-summary-card lg:sticky lg:top-24">
+            <div class="sgd-summary-head">
+                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-sky-200">Tu orden</p>
+                <h2 class="mt-0.5 text-lg font-extrabold">Resumen del pedido</h2>
+            </div>
+            <div class="p-5">
+                <ul class="space-y-3 text-sm">
+                    {% for linea in resumen.lineas %}
+                    <li class="flex justify-between gap-3">
+                        <span class="text-slate-600">{{ linea.cantidad }} × {{ linea.presentacion.nombre_envase }}</span>
+                        <strong class="whitespace-nowrap text-[#0F1E36]">S/ {{ linea.subtotal }}</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="my-4 border-t border-dashed border-slate-200"></div>
+                <p class="flex items-end justify-between font-extrabold text-[#0F1E36]">
+                    <span class="text-sm text-slate-600">Total estimado</span>
+                    <span class="text-xl">S/ {{ resumen.subtotal }}</span>
+                </p>
+                <dl class="mt-4 space-y-2 rounded-xl bg-slate-50 p-3 text-xs border border-slate-200/70">
+                    <div class="flex justify-between gap-3"><dt class="text-slate-600">Resina (A)</dt><dd class="font-bold text-[#0F1E36]">{{ resumen.total_resina_a_kg|floatformat:2 }} kg</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-slate-600">Catalizador (B)</dt><dd class="font-bold text-[#0F1E36]">{{ resumen.total_catalizador_b_kg|floatformat:2 }} kg</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-slate-600">Pigmento</dt><dd class="font-bold text-[#0F1E36]">{{ resumen.total_pigmento_gramos|floatformat:2 }} g</dd></div>
+                </dl>
+                <div class="mt-4 space-y-2.5 text-xs leading-5">
+                    <p class="rounded-xl border border-slate-200 p-3 text-slate-600">
+                        <strong class="text-[#0F1E36]">Entrega Antidéficit:</strong> recojo en almacén Lima sin costo o envío por agencia según peso.
+                    </p>
+                    <p class="rounded-xl bg-sky-50 p-3 text-[#0F1E36]">
+                        <strong>Postventa (RF-09):</strong> seguimiento técnico programado a los 15 días.
+                    </p>
+                </div>
+            </div>
         </aside>
     </div>
     {% else %}
-    <div class="rounded-xl border border-slate-200 bg-white p-6">
+    <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
         <p class="text-sm text-slate-700">Agrega productos disponibles antes de finalizar la compra.</p>
-        <a href="{% url 'sales:carrito' %}" class="mt-3 inline-block font-semibold text-[#4752C4] underline">Volver al carrito</a>
+        <a href="{% url 'sales:carrito' %}" class="mt-4 inline-flex rounded-xl bg-[#0F1E36] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#166091]">Volver al carrito</a>
     </div>
     {% endif %}
 </section>
@@ -109,9 +232,11 @@
         const modalidad = document.getElementById("modalidad-compra");
         const metodo = document.getElementById("metodo-pago");
         const nota = document.getElementById("nota-proforma");
+        const contextoMetodo = document.getElementById("contexto-medio-pago");
         const servicio = document.getElementById("servicio-pedido");
         const proyecto = document.getElementById("proyecto-servicio");
         const notaServicio = document.getElementById("nota-servicio");
+        if (!modalidad || !metodo || !nota || !servicio || !proyecto || !notaServicio || !contextoMetodo) return;
         const actualizar = () => {
             const requiereProforma = servicio.value !== "";
             if (requiereProforma) modalidad.value = "PROFORMA";
@@ -121,15 +246,26 @@
             const proforma = modalidad.value === "PROFORMA";
             nota.classList.toggle("hidden", !proforma);
             notaServicio.classList.toggle("hidden", !requiereProforma);
-            metodo.value = proforma ? "TRANSFERENCIA_B2B" : "TARJETA_PRUEBA";
+            if (proforma) {
+                metodo.value = "TRANSFERENCIA_B2B";
+            } else if (metodo.value === "TRANSFERENCIA_B2B") {
+                metodo.value = "TARJETA_PRUEBA";
+            }
             for (const opcion of metodo.options) {
                 opcion.disabled = proforma
                     ? opcion.value !== "TRANSFERENCIA_B2B"
                     : opcion.value === "TRANSFERENCIA_B2B";
             }
+            const textosMetodo = {
+                TARJETA_PRUEBA: "Pago inmediato simulado con tarjeta (Visa/Mastercard) — sin cobro real.",
+                YAPE_PRUEBA: "Pago simulado vía Yape/Plin: genera tu orden al instante para seguimiento y despacho.",
+                TRANSFERENCIA_B2B: "Proforma corporativa: emite tu cotización formal para transferencia bancaria o coordinación."
+            };
+            contextoMetodo.textContent = textosMetodo[metodo.value] || "";
         };
         modalidad.addEventListener("change", actualizar);
         servicio.addEventListener("change", actualizar);
+        metodo.addEventListener("change", actualizar);
         actualizar();
     })();
 </script>

@@ -4,22 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso y Registro | SGD Global Import</title>
+    <title>Iniciar sesión | SGD Global Import</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
     <style>
         :root {
-            --card-bg: #2b2738;
-            --input-bg: #3b364c;
-            --input-border: #524b68;
-            --accent: #6d5dfc;
-            --accent-hover: #5848e8;
+            --card-bg: #1E1F22;
+            --input-bg: #2B2D31;
+            --input-border: #3F4248;
+            --accent: #5865F2;
+            --accent-hover: #4752C4;
             --text-main: #ffffff;
-            --text-muted: #a39eb5;
+            --text-muted: #94A3B8;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             min-height: 100vh;
-            background: radial-gradient(circle at top left, #6b657e 0%, #484357 55%, #302c3d 100%);
+            background: radial-gradient(circle at top left, #313338 0%, #1E1F22 60%, #111214 100%);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: var(--text-main);
             display: flex;
@@ -30,19 +30,19 @@
         .auth-card {
             width: 100%;
             max-width: 1020px;
-            min-height: 600px;
+            min-height: 580px;
             background: var(--card-bg);
-            border-radius: 26px;
+            border-radius: 24px;
             padding: 16px;
             display: grid;
             grid-template-columns: 1.02fr 1fr;
             gap: 16px;
-            box-shadow: 0 30px 70px rgba(12, 10, 20, 0.58);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         @media (max-width: 860px) {
             .auth-card { grid-template-columns: 1fr; }
-            .cover-panel { min-height: 240px; }
+            .cover-panel { min-height: 220px; }
         }
         .cover-panel {
             position: relative;
@@ -52,100 +52,53 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 28px;
-            background-color: #382f56;
+            background-color: #313338;
             background-image:
-                linear-gradient(180deg, rgba(35, 27, 58, 0.25) 0%, rgba(27, 22, 42, 0.85) 100%),
+                linear-gradient(180deg, rgba(30, 31, 34, 0.25) 0%, rgba(17, 18, 20, 0.88) 100%),
                 url("{% static 'img/login-portada.jpg' %}"),
                 url("https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=85");
             background-size: cover;
             background-position: center;
         }
-        .cover-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 2;
-        }
+        .cover-top { display: flex; align-items: center; justify-content: space-between; z-index: 2; }
         .brand-logo {
-            font-size: 1.4rem;
-            font-weight: 900;
-            letter-spacing: 0.08em;
-            color: #ffffff;
-            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 10px;
+            font-size: 1.15rem; font-weight: 900; letter-spacing: 0.04em;
+            color: #ffffff; text-decoration: none;
+        }
+        .brand-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 10px; background: var(--accent);
+            font-size: 0.85rem; font-weight: 900;
         }
         .back-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.16);
-            backdrop-filter: blur(10px);
-            color: #ffffff;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-decoration: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+            border-radius: 999px; background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(10px); color: #ffffff; font-size: 0.8rem;
+            font-weight: 600; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .cover-bottom {
-            z-index: 2;
-            text-align: center;
-            margin-top: auto;
-        }
-        .cover-title {
-            font-size: 1.65rem;
-            font-weight: 700;
-            line-height: 1.25;
-            margin-bottom: 16px;
-        }
-        .dots { display: flex; justify-content: center; gap: 8px; }
-        .dot { height: 4px; width: 26px; border-radius: 99px; background: rgba(255, 255, 255, 0.3); }
-        .dot.active { width: 38px; background: #ffffff; }
-        .form-panel {
-            padding: 34px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .form-heading { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .cover-bottom { z-index: 2; margin-top: auto; }
+        .cover-title { font-size: 1.65rem; font-weight: 800; line-height: 1.25; margin-bottom: 10px; }
+        .cover-desc { font-size: 0.88rem; color: #CBD5E1; line-height: 1.5; }
+        .form-panel { padding: 36px; display: flex; flex-direction: column; justify-content: center; }
+        .form-heading { font-size: 1.85rem; font-weight: 800; margin-bottom: 8px; }
         .form-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
-        .form-sub a { color: #9d91ff; font-weight: 600; text-decoration: underline; }
-        .field { margin-bottom: 14px; position: relative; }
+        .form-sub a { color: #818CF8; font-weight: 600; text-decoration: underline; }
+        .field { margin-bottom: 14px; }
         .input {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: #ffffff;
-            padding: 14px 16px;
-            border-radius: 11px;
-            font-size: 0.92rem;
-            outline: none;
+            width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+            color: #ffffff; padding: 14px 16px; border-radius: 12px; font-size: 0.92rem; outline: none;
         }
-        .input:focus {
-            border-color: #8b7dff;
-            box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.25);
-        }
+        .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.25); }
         .btn-submit {
-            width: 100%;
-            background: var(--accent);
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            border-radius: 11px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 8px;
+            width: 100%; background: var(--accent); color: #ffffff; border: none;
+            padding: 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; margin-top: 8px;
         }
         .btn-submit:hover { background: var(--accent-hover); }
         .error-alert {
-            background: rgba(239, 68, 68, 0.16);
-            border: 1px solid rgba(239, 68, 68, 0.45);
-            color: #fecaca;
-            padding: 11px 14px;
-            border-radius: 11px;
-            font-size: 0.82rem;
-            margin-bottom: 16px;
+            background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.45);
+            color: #fecaca; padding: 11px 14px; border-radius: 12px; font-size: 0.82rem; margin-bottom: 16px;
         }
     </style>
 </head>
@@ -153,26 +106,25 @@
     <div class="auth-card">
         <div class="cover-panel">
             <div class="cover-top">
-                <a href="{% url 'catalog:portada' %}" class="brand-logo">SGD</a>
-                <a href="{% url 'catalog:store_front' %}" class="back-pill">Volver al catálogo &rarr;</a>
+                <a href="{% url 'catalog:portada' %}" class="brand-logo">
+                    <span class="brand-badge">SGD</span>
+                    <span>SGD Global Import</span>
+                </a>
+                <a href="{% url 'catalog:store_front' %}" class="back-pill">Volver a la tienda &rarr;</a>
             </div>
             <div class="cover-bottom">
                 <h2 class="cover-title">Acabados Epóxicos,<br>Proyectos que Perduran</h2>
-                <div class="dots">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot active"></span>
-                </div>
+                <p class="cover-desc">Accede a precios preferenciales de miembro, guarda tus fórmulas de color y consulta tus pedidos.</p>
             </div>
         </div>
         <div class="form-panel">
-            <h1 class="form-heading">Iniciar sesión</h1>
+            <h1 class="form-heading">Bienvenido de vuelta</h1>
             <p class="form-sub">
-                ¿Eres cliente nuevo y quieres activar ofertas? <a href="/registro/">Regístrate aquí</a>
+                ¿Eres cliente nuevo y quieres activar ofertas? <a href="/registro/">Crea tu cuenta gratis</a>
             </p>
             {% if form.errors %}
             <div class="error-alert">
-                Usuario o contraseña incorrectos. Inténtalo de nuevo o regístrate gratis.
+                Usuario o contraseña incorrectos. Verifica tus datos o crea una cuenta nueva.
             </div>
             {% endif %}
             <form action="{{ app_path }}" method="post">
@@ -184,7 +136,7 @@
                 <div class="field">
                     <input type="password" name="password" class="input" placeholder="Contraseña" required>
                 </div>
-                <button type="submit" class="btn-submit">Ingresar</button>
+                <button type="submit" class="btn-submit">Ingresar a mi cuenta</button>
             </form>
         </div>
     </div>

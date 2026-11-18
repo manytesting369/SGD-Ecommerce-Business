@@ -214,6 +214,9 @@ def checkout_view(request):
     form_data = {
         campo: request.POST.get(campo, "")
         for campo in (
+            "cliente_documento",
+            "cliente_nombre",
+            "cliente_correo",
             "tipo_servicio",
             "proyecto_servicio",
             "modalidad",

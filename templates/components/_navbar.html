@@ -1,201 +1,578 @@
-<header class="bg-[#313338] text-white shadow-md sticky top-0 z-50">
-    <div class="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <div class="flex min-w-0 flex-wrap items-center gap-2 sm:flex-nowrap sm:gap-3">
-            <a href="{% url 'catalog:portada' %}" class="whitespace-nowrap text-lg font-extrabold tracking-tight text-white hover:opacity-90 sm:text-xl">
-                SGD GLOBAL IMPORT
-            </a>
-            <span class="max-w-[10.5rem] rounded bg-[#5865F2] px-2.5 py-1 text-[10px] font-semibold uppercase leading-4 text-white sm:max-w-none sm:text-xs">
-                SIGCE · Resinas &amp; Epóxicos
-            </span>
+<style>
+    /* ==========================================================================
+       NAVBAR E-COMMERCE SGD GLOBAL IMPORT (Armonizado con portada.html)
+       Paleta: #0F1E36 (Marino) · #166091 (Acero) · #E11D48 (Carmesí) · #84CC16 (Lima)
+       ========================================================================== */
+    .sgd-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid #E2E8F0;
+        box-shadow: 0 4px 20px -6px rgba(15, 30, 54, 0.1);
+    }
+    .sgd-topbar {
+        background: linear-gradient(90deg, #0F1E36 0%, #166091 55%, #0F1E36 100%);
+        color: #E2E8F0;
+        font-size: 0.72rem;
+        font-weight: 500;
+    }
+    .sgd-topbar-inner {
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 0.42rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .sgd-nav-shell {
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 0 1rem;
+        height: 4.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    @media (min-width: 640px) {
+        .sgd-topbar-inner, .sgd-nav-shell { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (min-width: 1024px) {
+        .sgd-topbar-inner, .sgd-nav-shell { padding-left: 2rem; padding-right: 2rem; }
+    }
+
+    /* Botón Burguer */
+    .sgd-burger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid #CBD5E1;
+        background: #F8FAFC;
+        color: #0F1E36;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .sgd-burger:hover {
+        background: #0F1E36;
+        border-color: #0F1E36;
+        color: #FFFFFF;
+    }
+    @media (min-width: 1024px) {
+        .sgd-burger { display: none; }
+    }
+
+    /* Marca */
+    .sgd-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        text-decoration: none;
+    }
+    .sgd-brand-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 0.75rem;
+        background: linear-gradient(135deg, #0F1E36 0%, #166091 100%);
+        color: #FFFFFF;
+        font-weight: 900;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        box-shadow: 0 6px 14px -4px rgba(15, 30, 54, 0.4);
+        transition: transform 0.2s ease;
+    }
+    .sgd-brand:hover .sgd-brand-badge { transform: scale(1.05); }
+
+    /* Links Desktop */
+    .sgd-nav-links {
+        display: none;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    @media (min-width: 1024px) {
+        .sgd-nav-links { display: flex; }
+    }
+    .sgd-nav-link {
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.65rem;
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: #334155;
+        text-decoration: none;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+    }
+    .sgd-nav-link:hover {
+        background: #F1F5F9;
+        color: #0F1E36;
+    }
+    .sgd-nav-offer {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.42rem 0.85rem;
+        border-radius: 999px;
+        background: #FFF1F2;
+        border: 1px solid #FECDD3;
+        color: #BE123C;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+    }
+    .sgd-nav-offer:hover {
+        background: #E11D48;
+        border-color: #E11D48;
+        color: #FFFFFF;
+    }
+
+    /* Botón Carrito */
+    .sgd-cart-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.52rem 0.9rem;
+        border-radius: 0.8rem;
+        background: #0F1E36;
+        color: #FFFFFF;
+        font-size: 0.84rem;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 6px 16px -4px rgba(15, 30, 54, 0.35);
+        transition: all 0.2s ease;
+    }
+    .sgd-cart-btn:hover {
+        background: #166091;
+        transform: translateY(-1px);
+    }
+    .sgd-cart-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.35rem;
+        height: 1.35rem;
+        padding: 0 0.35rem;
+        border-radius: 999px;
+        background: #84CC16;
+        color: #0F1E36;
+        font-size: 0.72rem;
+        font-weight: 900;
+    }
+
+    /* Drawer Burguer */
+    .sgd-mobile-drawer {
+        border-top: 1px solid #E2E8F0;
+        background: #FFFFFF;
+        box-shadow: 0 18px 35px -15px rgba(15, 30, 54, 0.25);
+    }
+    .sgd-mobile-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.72rem 0.95rem;
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #0F1E36;
+        text-decoration: none;
+        transition: background 0.15s ease;
+    }
+    .sgd-mobile-link:hover { background: #F1F5F9; }
+</style>
+
+<header class="sgd-header">
+    <!-- Top Strip Comercial -->
+    <div class="sgd-topbar">
+        <div class="sgd-topbar-inner">
+            <p class="truncate">
+                <strong class="text-white">SGD Global Import</strong> · Envíos a todo el Perú · Flete S/ 0 en Lima desde S/ 260
+            </p>
+            <div class="hidden items-center gap-4 sm:flex">
+                <a href="{% url 'catalog:store_front' %}?ofertas=1" class="font-extrabold text-[#84CC16] hover:underline">
+                    -15% Miembros Registrados
+                </a>
+                <span class="opacity-40">|</span>
+                <a href="{% url 'sales:solicitar_servicio' %}" class="text-slate-200 hover:text-white">
+                    Asesoría e instalación (-12%)
+                </a>
+            </div>
         </div>
-        <nav aria-label="Navegación principal" class="flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs font-medium sm:w-auto sm:justify-end sm:gap-5 sm:text-sm">
-            <a href="{% url 'catalog:portada' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Inicio</a>
-            <a href="{% url 'catalog:store_front' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Catálogo</a>
-            <a href="{% url 'catalog:store_front' %}?ofertas=1" class="text-amber-300 hover:text-amber-200 font-semibold transition">Ofertas</a>
-            <a href="{% url 'calculator:index' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Estimador</a>
-            <a href="{% url 'sales:solicitar_servicio' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Servicios</a>
-            <a href="{% url 'palette_lab:lista' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Paletas</a>
-            <div class="relative" id="cart-popover">
+    </div>
+
+    <!-- Barra Principal -->
+    <div class="sgd-nav-shell">
+        <!-- Izquierda: Burguer + Marca -->
+        <div class="flex items-center gap-3">
+            <button
+                type="button"
+                id="mobile-menu-toggle"
+                aria-expanded="false"
+                aria-controls="mobile-drawer"
+                aria-label="Abrir menú de navegación"
+                class="sgd-burger"
+            >
+                <svg id="burger-icon-open" aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-5 w-5">
+                    <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+                </svg>
+                <svg id="burger-icon-close" aria-hidden="true" viewBox="0 0 24 24" fill="none" class="hidden h-5 w-5">
+                    <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+                </svg>
+            </button>
+
+            <a href="{% url 'catalog:portada' %}" class="sgd-brand">
+                <span class="sgd-brand-badge">SGD</span>
+                <div class="leading-tight">
+                    <span class="block text-sm font-extrabold tracking-tight text-[#0F1E36] sm:text-base">
+                        SGD Global Import
+                    </span>
+                    <span class="hidden text-[10px] font-bold uppercase tracking-wider text-[#166091] sm:block">
+                        Resinas &amp; Epóxicos
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Centro: Enlaces Desktop (Limpios y espaciados) -->
+        <nav aria-label="Navegación principal" class="sgd-nav-links">
+            <a href="{% url 'catalog:portada' %}" class="sgd-nav-link">Inicio</a>
+            <a href="{% url 'catalog:store_front' %}" class="sgd-nav-link">Catálogo</a>
+            <a href="{% url 'catalog:store_front' %}?ofertas=1" class="sgd-nav-offer">
+                <span>★</span> Ofertas
+            </a>
+            <a href="{% url 'calculator:index' %}" class="sgd-nav-link">Estimador</a>
+            <a href="{% url 'palette_lab:lista' %}" class="sgd-nav-link">Color 3D</a>
+            <a href="{% url 'sales:solicitar_servicio' %}" class="sgd-nav-link">Servicios</a>
+        </nav>
+
+        <!-- Derecha: Gestión Staff + Carrito + Cuenta -->
+        <div class="flex items-center gap-2 sm:gap-2.5">
+            {% if user.is_staff %}
+            <div class="relative hidden lg:block" id="staff-menu-container">
+                <button
+                    type="button"
+                    id="staff-menu-toggle"
+                    aria-expanded="false"
+                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-[#0F1E36] transition hover:border-[#166091] hover:bg-sky-50"
+                >
+                    <span>Gestión</span>
+                    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" class="h-3.5 w-3.5"><path d="m6 8 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div id="staff-menu-panel" class="hidden absolute right-0 z-50 mt-2 w-52 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl">
+                    <a href="{% url 'sales:recordatorios' %}" class="block rounded-xl px-3 py-2 text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-[#166091]">Seguimiento 15 días</a>
+                    <a href="{% url 'sales:metricas' %}" class="block rounded-xl px-3 py-2 text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-[#166091]">Métricas del negocio</a>
+                    <a href="/admin/" class="mt-1 block rounded-xl bg-[#0F1E36] px-3 py-2 text-xs font-extrabold text-white hover:bg-[#166091]">Panel interno</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Carrito Superpuesto AJAX (IDs protegidos por tests) -->
+            <div id="cart-popover" class="relative">
                 <button
                     type="button"
                     id="cart-toggle"
                     aria-expanded="false"
                     aria-controls="cart-popover-panel"
-                    class="relative inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:border-white/25 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    class="sgd-cart-btn"
                 >
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-5 w-5">
-                        <path d="M3.5 4.5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4l1.5-6.3H6.4M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
+                        <path d="M3 4h1.6l1.7 8.2a1 1 0 0 0 1 .8h6.9a1 1 0 0 0 1-.76L16.6 6H5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="8" cy="16" r="1.3" fill="currentColor"/>
+                        <circle cx="14" cy="16" r="1.3" fill="currentColor"/>
                     </svg>
-                    <span>Carrito</span>
-                    <span id="cart-count" class="inline-flex min-w-6 items-center justify-center rounded-full bg-[#5865F2] px-1.5 py-0.5 text-xs font-extrabold text-white">{{ cantidad_articulos }}</span>
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4 transition-transform" id="cart-chevron">
-                        <path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <span class="hidden sm:inline">Carrito</span>
+                    <span id="cart-count" class="sgd-cart-badge">{{ cantidad_articulos }}</span>
                 </button>
-                <section id="cart-popover-panel" class="absolute right-0 top-full z-[60] mt-3 hidden w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white text-[#313338] shadow-[0_24px_70px_-20px_rgba(20,24,40,0.55)]" aria-label="Resumen del carrito">
-                    <div class="flex items-start justify-between border-b border-slate-100 bg-[#F2F3F5] px-5 py-4">
+
+                <div
+                    id="cart-popover-panel"
+                    role="region"
+                    aria-label="Resumen rápido del carrito"
+                    class="hidden absolute right-0 z-50 mt-2.5 w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white p-4 text-slate-700 shadow-2xl sm:w-96"
+                >
+                    <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
                         <div>
-                            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4752C4]">Tu selección</p>
-                            <h2 class="mt-1 text-base font-extrabold">Carrito de compras</h2>
+                            <p class="text-xs font-extrabold uppercase tracking-wide text-[#166091]">Tu bolsa de compra</p>
+                            <p class="text-xs text-slate-500">
+                                <span id="cart-preview-count">{{ cantidad_articulos }}</span> producto(s)
+                            </p>
                         </div>
-                        <span id="cart-preview-count" class="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-600">{{ cantidad_articulos }} artículos</span>
+                        <a href="{% url 'sales:carrito' %}" class="text-xs font-extrabold text-[#166091] underline hover:text-[#0F1E36]">
+                            Ver carrito completo
+                        </a>
                     </div>
+
                     <div id="cart-popover-content">
                         {% if lineas %}
-                        <ul class="max-h-80 divide-y divide-slate-100 overflow-y-auto px-4">
-                            {% for linea in lineas %}
-                            <li class="flex gap-3 py-3.5">
-                                {% if linea.disponible and linea.imagen %}
-                                <img src="{{ linea.imagen }}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='/media/productos/RES-BAJA-VISC.svg';" class="h-14 w-14 shrink-0 rounded-xl border border-slate-200 bg-[#F2F3F5] object-cover">
-                                {% else %}
-                                <span class="grid h-14 w-14 shrink-0 place-items-center rounded-xl border border-slate-200 bg-[#F2F3F5] text-[#4752C4]">
-                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-6 w-6">
-                                        <path d="M5 6.5 12 3l7 3.5v11L12 21l-7-3.5v-11Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                                        <path d="m5.5 6.8 6.5 3.4 6.5-3.4M12 10.2V20" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                                    </svg>
-                                </span>
-                                {% endif %}
-                                <div class="min-w-0 flex-1">
-                                    <p class="truncate text-sm font-bold">{{ linea.nombre }}</p>
-                                    <p class="mt-0.5 truncate text-xs text-slate-500">{{ linea.envase|default:"No disponible" }}{% if linea.kit_indivisible %} · Paquete técnico{% endif %}</p>
-                                    {% if linea.disponible %}
-                                    <p class="mt-1 text-xs text-slate-600">{{ linea.cantidad }} × S/ {{ linea.precio_unitario }}</p>
-                                    {% else %}
-                                    <p class="mt-1 text-xs font-semibold text-rose-700">Revisa esta línea en el carrito</p>
-                                    {% endif %}
+                            <ul class="mt-3 max-h-72 divide-y divide-slate-100 overflow-y-auto pr-1">
+                                {% for linea in lineas %}
+                                    <li class="py-2.5 text-xs {% if not linea.disponible %}opacity-60{% endif %}">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="flex min-w-0 items-start gap-2.5">
+                                                {% if linea.imagen %}
+                                                    <img src="{{ linea.imagen }}" alt="{{ linea.nombre }}" width="40" height="40" class="h-10 w-10 shrink-0 rounded-lg border border-slate-200 object-cover">
+                                                {% else %}
+                                                    <div aria-hidden="true" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-[10px] font-extrabold text-[#166091]">
+                                                        SKU
+                                                    </div>
+                                                {% endif %}
+                                                <div class="min-w-0">
+                                                    <p class="truncate font-bold text-[#0F1E36]">{{ linea.nombre }}</p>
+                                                    <p class="text-slate-500">{{ linea.envase }}{% if linea.kit_indivisible %} · Kit A+B{% endif %}</p>
+                                                    <p class="mt-0.5 text-[11px] text-slate-500">{{ linea.cantidad }} × S/ {{ linea.precio_unitario|floatformat:2 }}</p>
+                                                    {% if not linea.disponible %}
+                                                        <p class="mt-0.5 font-semibold text-amber-700">Sin stock suficiente</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <span class="shrink-0 font-extrabold text-[#0F1E36]">S/ {{ linea.subtotal|floatformat:2 }}</span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="mt-3 border-t border-slate-100 pt-3">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="font-semibold text-slate-600">Subtotal estimado</span>
+                                    <span class="text-sm font-extrabold text-[#0F1E36]">S/ {{ subtotal|default:0|floatformat:2 }}</span>
                                 </div>
-                                <p class="shrink-0 pt-0.5 text-sm font-extrabold">S/ {{ linea.subtotal|floatformat:2 }}</p>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        {% else %}
-                        <div class="px-6 py-8 text-center">
-                            <span class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-indigo-50 text-[#4752C4]">
-                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-6 w-6">
-                                    <path d="M3.5 4.5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4l1.5-6.3H6.4M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
-                            <p class="mt-3 text-sm font-bold">Aún no agregas productos</p>
-                            <p class="mt-1 text-xs text-slate-500">Tus selecciones aparecerán aquí.</p>
-                        </div>
-                        {% endif %}
-                        <div class="border-t border-slate-100 bg-white px-5 py-4">
-                            <div class="mb-3 flex items-center justify-between">
-                                <span class="text-sm font-semibold text-slate-600">Subtotal estimado</span>
-                                <strong class="text-lg font-extrabold">S/ {{ subtotal|default:0|floatformat:2 }}</strong>
+                                <div class="mt-3 grid grid-cols-2 gap-2">
+                                    <a href="{% url 'sales:carrito' %}" class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-[#0F1E36] hover:border-[#166091]">
+                                        Editar bolsa
+                                    </a>
+                                    <a href="{% url 'sales:checkout' %}" class="inline-flex items-center justify-center rounded-xl bg-[#E11D48] px-3 py-2 text-xs font-extrabold text-white hover:bg-rose-700">
+                                        Finalizar compra
+                                    </a>
+                                </div>
                             </div>
-                            <a href="{% url 'sales:carrito' %}" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-                                Ver carrito completo
-                                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
-                                    <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </a>
-                        </div>
+                        {% else %}
+                            <p class="py-6 text-center text-xs text-slate-500">Tu carrito está vacío.</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center justify-center rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-[#166091] hover:bg-sky-100">
+                                    Ir al catálogo
+                                </a>
+                                <a href="{% url 'calculator:index' %}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#166091]">
+                                    Usar estimador
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
-                </section>
-                <span id="cart-live-region" class="sr-only" aria-live="polite"></span>
+                </div>
             </div>
+
+            <span id="cart-live-region" class="sr-only" aria-live="polite"></span>
+
+            <!-- Cuenta (Desktop) -->
+            <div class="hidden items-center gap-2 sm:flex">
+                {% if user.is_authenticated %}
+                    <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-[#0F1E36]">
+                        {{ user.first_name|default:user.username }}
+                    </span>
+                    <form method="post" action="{% url 'catalog:salir' %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-bold text-slate-600 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700">
+                            Salir
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'catalog:registro' %}?modo=login" class="rounded-lg px-2.5 py-1.5 text-xs font-bold text-[#0F1E36] hover:bg-slate-100">
+                        Ingresar
+                    </a>
+                    <a href="{% url 'catalog:registro' %}" class="rounded-xl border border-[#166091] px-3 py-1.5 text-xs font-extrabold text-[#166091] transition hover:bg-[#166091] hover:text-white">
+                        Crear cuenta
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú Burguer Desplegable (Móvil / Tablet) -->
+    <div id="mobile-drawer" class="sgd-mobile-drawer hidden lg:hidden">
+        <nav aria-label="Menú móvil" class="mx-auto max-w-7xl space-y-1 px-4 py-4 sm:px-6">
+            <a href="{% url 'catalog:portada' %}" class="sgd-mobile-link"><span>Inicio</span><span>→</span></a>
+            <a href="{% url 'catalog:store_front' %}" class="sgd-mobile-link"><span>Catálogo de materiales</span><span>→</span></a>
+            <a href="{% url 'catalog:store_front' %}?ofertas=1" class="sgd-mobile-link bg-rose-50 text-[#BE123C]"><span>★ Ofertas activas (-15%)</span><span>→</span></a>
+            <a href="{% url 'calculator:index' %}" class="sgd-mobile-link text-[#166091]"><span>Estimador de resina</span><span>→</span></a>
+            <a href="{% url 'palette_lab:lista' %}" class="sgd-mobile-link text-[#166091]"><span>Laboratorio de color 3D</span><span>→</span></a>
+            <a href="{% url 'sales:solicitar_servicio' %}" class="sgd-mobile-link"><span>Servicios e instalación</span><span>→</span></a>
+
             {% if user.is_staff %}
-            <a href="{% url 'sales:recordatorios' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Seguimiento</a>
-            <a href="{% url 'sales:metricas' %}" class="text-slate-100 hover:text-white hover:underline underline-offset-4 transition">Métricas</a>
-            <a href="/admin/" class="text-slate-300 hover:text-white text-xs border border-slate-600 px-2.5 py-1.5 rounded-lg transition">Panel Interno</a>
+            <div class="mt-3 border-t border-slate-200 pt-3">
+                <p class="px-3 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Gestión interna</p>
+                <a href="{% url 'sales:recordatorios' %}" class="sgd-mobile-link text-sm">Seguimiento 15 días</a>
+                <a href="{% url 'sales:metricas' %}" class="sgd-mobile-link text-sm">Métricas del negocio</a>
+                <a href="/admin/" class="sgd-mobile-link text-sm">Panel Admin</a>
+            </div>
             {% endif %}
 
-            {% if user.is_authenticated %}
-            <div class="flex items-center gap-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
-                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span class="text-slate-100 font-semibold">{{ user.first_name|default:user.username }}</span>
-                <span class="text-emerald-400 font-bold">(Ofertas activas)</span>
-                <a href="{% url 'catalog:salir' %}" class="ml-2 text-rose-300 hover:text-rose-200 underline">Salir</a>
+            <div class="mt-3 border-t border-slate-200 pt-3 sm:hidden">
+                {% if user.is_authenticated %}
+                    <div class="flex items-center justify-between px-3 py-2">
+                        <span class="text-sm font-bold text-[#0F1E36]">Hola, {{ user.first_name|default:user.username }}</span>
+                        <form method="post" action="{% url 'catalog:salir' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700">Salir</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{% url 'catalog:registro' %}?modo=login" class="rounded-xl border border-slate-300 px-3 py-2.5 text-center text-sm font-bold text-[#0F1E36]">Ingresar</a>
+                        <a href="{% url 'catalog:registro' %}" class="rounded-xl bg-[#0F1E36] px-3 py-2.5 text-center text-sm font-bold text-white">Crear cuenta</a>
+                    </div>
+                {% endif %}
             </div>
-            {% else %}
-            <a href="{% url 'catalog:registro' %}" class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-2 px-4 rounded-lg text-xs transition shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                Registrarse
-            </a>
-            {% endif %}
         </nav>
     </div>
 </header>
 <script>
-    (() => {
+    (function () {
+        // Menú Burguer
+        const mobileBtn = document.getElementById("mobile-menu-toggle");
+        const mobileDrawer = document.getElementById("mobile-drawer");
+        const iconOpen = document.getElementById("burger-icon-open");
+        const iconClose = document.getElementById("burger-icon-close");
+        if (mobileBtn && mobileDrawer) {
+            mobileBtn.addEventListener("click", function () {
+                const isOpen = mobileDrawer.classList.toggle("hidden") === false;
+                mobileBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+                if (iconOpen && iconClose) {
+                    iconOpen.classList.toggle("hidden", isOpen);
+                    iconClose.classList.toggle("hidden", !isOpen);
+                }
+            });
+        }
+
+        // Dropdown Staff
+        const staffContainer = document.getElementById("staff-menu-container");
+        const staffToggle = document.getElementById("staff-menu-toggle");
+        const staffPanel = document.getElementById("staff-menu-panel");
+        if (staffContainer && staffToggle && staffPanel) {
+            staffToggle.addEventListener("click", function (event) {
+                event.stopPropagation();
+                const open = staffPanel.classList.toggle("hidden") === false;
+                staffToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            });
+            document.addEventListener("click", function (event) {
+                if (!staffContainer.contains(event.target)) {
+                    staffPanel.classList.add("hidden");
+                    staffToggle.setAttribute("aria-expanded", "false");
+                }
+            });
+        }
+
+        // Carrito Superpuesto AJAX
+        const container = document.getElementById("cart-popover");
         const toggle = document.getElementById("cart-toggle");
         const panel = document.getElementById("cart-popover-panel");
-        const content = document.getElementById("cart-popover-content");
-        const count = document.getElementById("cart-count");
+        const countBadge = document.getElementById("cart-count");
         const previewCount = document.getElementById("cart-preview-count");
+        const popoverContent = document.getElementById("cart-popover-content");
         const liveRegion = document.getElementById("cart-live-region");
-        const popover = document.getElementById("cart-popover");
-        if (!toggle || !panel || !content || !count || !previewCount || !liveRegion || !popover) return;
+        if (!container || !toggle || !panel) return;
 
-        const setOpen = (open) => {
-            panel.classList.toggle("hidden", !open);
-            toggle.setAttribute("aria-expanded", String(open));
-            document.getElementById("cart-chevron")?.classList.toggle("rotate-180", open);
-        };
-        toggle.addEventListener("click", () => {
-            setOpen(toggle.getAttribute("aria-expanded") !== "true");
-        });
-        document.addEventListener("click", (event) => {
-            if (!popover.contains(event.target)) setOpen(false);
-        });
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
-                setOpen(false);
-                toggle.focus();
+        function closePanel() {
+            panel.classList.add("hidden");
+            toggle.setAttribute("aria-expanded", "false");
+        }
+
+        function openPanel() {
+            panel.classList.remove("hidden");
+            toggle.setAttribute("aria-expanded", "true");
+        }
+
+        toggle.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if (panel.classList.contains("hidden")) {
+                openPanel();
+            } else {
+                closePanel();
             }
         });
 
-        document.addEventListener("submit", async (event) => {
+        document.addEventListener("click", function (event) {
+            if (!container.contains(event.target)) {
+                closePanel();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closePanel();
+            }
+        });
+
+        document.addEventListener("submit", async function (event) {
             const form = event.target.closest("form[data-cart-add]");
-            if (!form) return;
+            if (!form || !window.fetch) return;
             event.preventDefault();
-            const button = form.querySelector("button[type='submit']");
-            const originalText = button?.textContent;
-            form.querySelector("[data-cart-feedback]")?.remove();
-            if (button) {
-                button.disabled = true;
-                button.textContent = "Agregando…";
-            }
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            const previousLabel = submitButton ? submitButton.textContent : "";
+            if (submitButton) submitButton.disabled = true;
+
+            let itemAdded = false;
             try {
                 const response = await fetch(form.action, {
                     method: "POST",
                     body: new FormData(form),
-                    credentials: "same-origin",
-                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    },
+                    credentials: "same-origin"
                 });
-                const result = await response.json();
-                if (!response.ok || !result.success) {
-                    throw new Error(result.message || "No se pudo agregar el paquete.");
+                const payload = await response.json();
+                if (!response.ok || !payload.success) {
+                    throw new Error(payload.message || "No se pudo agregar el producto.");
                 }
+                itemAdded = true;
+
                 const summaryResponse = await fetch("{% url 'sales:carrito' %}", {
                     credentials: "same-origin",
-                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                    headers: {"X-Requested-With": "XMLHttpRequest"}
                 });
-                if (!summaryResponse.ok) throw new Error(`HTTP ${summaryResponse.status}`);
-                const page = new DOMParser().parseFromString(await summaryResponse.text(), "text/html");
-                const nextContent = page.querySelector("#cart-popover-content");
-                const nextCount = page.querySelector("#cart-count");
-                const nextPreviewCount = page.querySelector("#cart-preview-count");
+                if (!summaryResponse.ok) throw new Error("HTTP " + summaryResponse.status);
+                const summaryPage = new DOMParser().parseFromString(
+                    await summaryResponse.text(),
+                    "text/html"
+                );
+                const nextContent = summaryPage.querySelector("#cart-popover-content");
+                const nextCount = summaryPage.querySelector("#cart-count");
+                const nextPreviewCount = summaryPage.querySelector("#cart-preview-count");
                 if (!nextContent || !nextCount || !nextPreviewCount) {
-                    throw new Error("No se recibió el resumen del carrito.");
+                    throw new Error("Resumen no disponible.");
                 }
-                content.innerHTML = nextContent.innerHTML;
-                count.textContent = nextCount.textContent;
-                previewCount.textContent = nextPreviewCount.textContent;
-                liveRegion.textContent = `${result.message} ${nextCount.textContent} artículos en el carrito.`;
-                setOpen(true);
+
+                if (popoverContent) popoverContent.innerHTML = nextContent.innerHTML;
+                if (countBadge) countBadge.textContent = nextCount.textContent;
+                if (previewCount) previewCount.textContent = nextPreviewCount.textContent;
+                if (liveRegion) liveRegion.textContent = payload.message + " " + nextCount.textContent + " artículos en el carrito.";
+                openPanel();
+                if (submitButton) {
+                    submitButton.textContent = "Agregado ✓";
+                    window.setTimeout(function () {
+                        submitButton.textContent = previousLabel;
+                    }, 1200);
+                }
             } catch (error) {
-                const notice = document.createElement("p");
-                notice.setAttribute("role", "alert");
-                notice.dataset.cartFeedback = "";
-                notice.className = "mt-2 text-sm font-semibold text-rose-700";
-                notice.textContent = error.message || "No se pudo actualizar el carrito. Revisa tu conexión e inténtalo otra vez.";
-                form.appendChild(notice);
-            } finally {
-                if (button) {
-                    button.disabled = false;
-                    button.textContent = originalText;
+                if (itemAdded) {
+                    if (liveRegion) {
+                        liveRegion.textContent = "Producto agregado, pero no se pudo actualizar el resumen del carrito.";
+                    }
+                } else {
+                    form.submit();
                 }
+            } finally {
+                if (submitButton) submitButton.disabled = false;
             }
         });
     })();

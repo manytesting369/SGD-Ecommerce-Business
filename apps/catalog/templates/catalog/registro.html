@@ -1,545 +1,83 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}SGD Global Import | Resinas Epóxicas, Acabados y Beneficios Exclusivos{% endblock %}
+{% block title %}{% if modo == "login" %}Iniciar sesión{% else %}Crear cuenta{% endif %} | SGD Global Import{% endblock %}
 
 {% block content %}
-<style>
-    /* Sistema Visual Retail (Inspiración Adidas / Ripley / Saga Falabella) — Autocontenido */
-    .sgd-landing {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-    }
+<section class="mx-auto max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#4752C4]">
+        Cuenta SGD Global Import
+    </span>
+    <h1 class="mt-3 text-2xl font-extrabold text-[#313338]">
+        {% if modo == "login" %}Inicia sesión{% else %}Crear cuenta{% endif %}
+    </h1>
+    <p class="mt-1 text-sm leading-6 text-slate-600">
+        {% if modo == "login" %}
+            Ingresa para consultar tus beneficios de miembro.
+        {% else %}
+            Regístrate para guardar tus pedidos y acceder a las ofertas marcadas.
+        {% endif %}
+    </p>
 
-    /* 1. Cintillo Promocional Superior */
-    .sgd-promo-strip {
-        background: linear-gradient(90deg, #0F172A 0%, #1E3A8A 50%, #0F172A 100%);
-        color: #FFFFFF;
-        border-radius: 1rem;
-        padding: 0.75rem 1.25rem;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.22);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .sgd-promo-strip-items {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.65rem 1.25rem;
-        font-size: 0.78rem;
-        font-weight: 600;
-    }
-    .sgd-pill-hot {
-        background: #E11D48;
-        color: #FFFFFF;
-        font-weight: 800;
-        font-size: 0.68rem;
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-    .sgd-pill-green {
-        background: #16A34A;
-        color: #FFFFFF;
-        font-weight: 800;
-        font-size: 0.68rem;
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
+    {% if error_msg %}
+    <p class="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-800" role="alert">{{ error_msg }}</p>
+    {% endif %}
 
-    /* 2. Hero Principal + Bento Grid de Campaña */
-    .sgd-hero-grid {
-        display: grid;
-        gap: 1.25rem;
-        grid-template-columns: 1fr;
-    }
-    @media (min-width: 1024px) {
-        .sgd-hero-grid {
-            grid-template-columns: minmax(0, 1.55fr) minmax(20rem, 0.85fr);
-        }
-    }
-    .sgd-hero-banner {
-        position: relative;
-        overflow: hidden;
-        border-radius: 1.5rem;
-        background:
-            radial-gradient(circle at 88% 18%, rgba(225, 29, 72, 0.28) 0%, transparent 45%),
-            radial-gradient(circle at 80% 85%, rgba(37, 99, 235, 0.45) 0%, transparent 55%),
-            linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #1E3A8A 100%);
-        color: #FFFFFF;
-        padding: 2rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 26rem;
-        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.35);
-    }
-    @media (min-width: 640px) {
-        .sgd-hero-banner { padding: 2.5rem; }
-    }
-    .sgd-hero-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 0.35rem 0.85rem;
-        font-size: 0.72rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #F8FAFC;
-        width: fit-content;
-    }
-    .sgd-hero-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1.25rem;
-    }
-    .sgd-hero-badge {
-        background: rgba(15, 23, 42, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 0.75rem;
-        padding: 0.45rem 0.8rem;
-        font-size: 0.76rem;
-        font-weight: 700;
-        color: #E2E8F0;
-    }
-    .sgd-hero-badge strong { color: #84CC16; }
-    .sgd-btn-crimson {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        background: #E11D48;
-        color: #FFFFFF;
-        font-weight: 800;
-        font-size: 0.875rem;
-        padding: 0.85rem 1.35rem;
-        border-radius: 0.85rem;
-        transition: all 0.2s ease;
-        box-shadow: 0 10px 20px -6px rgba(225, 29, 72, 0.45);
-    }
-    .sgd-btn-crimson:hover {
-        background: #BE123C;
-        transform: translateY(-1px);
-    }
-    .sgd-btn-glass {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        color: #FFFFFF;
-        font-weight: 700;
-        font-size: 0.875rem;
-        padding: 0.85rem 1.25rem;
-        border-radius: 0.85rem;
-        transition: all 0.2s ease;
-    }
-    .sgd-btn-glass:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
+    {% if modo == "login" %}
+    <form method="post" class="mt-6 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="login">
+        <label class="block text-sm font-semibold text-[#313338]">
+            Usuario o correo electrónico
+            <input name="username" autocomplete="username" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+        </label>
+        <label class="block text-sm font-semibold text-[#313338]">
+            Contraseña
+            <input type="password" name="password" autocomplete="current-password" required class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-[#5865F2] focus:outline-none focus:ring-2 focus:ring-[#5865F2]/30">
+        </label>
+        <button type="submit" class="w-full rounded-xl bg-[#5865F2] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
+            Iniciar sesión
+        </button>
+    </form>
+    <p class="mt-5 text-center text-xs text-slate-600">
+        ¿Aún no tienes cuenta?
+        <a href="{% url 'catalog:registro' %}" class="font-bold text-[#4752C4] underline hover:text-[#313338]">Regístrate</a>
+    </p>
+    {% else %}
+    <form method="post" class="mt-6 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="registro">
 
-    /* Tarjetas laterales del Bento Grid */
-    .sgd-bento-card {
-        border-radius: 1.5rem;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border: 1px solid #E2E8F0;
-        background: #FFFFFF;
-        box-shadow: 0 8px 24px -8px rgba(15, 23, 42, 0.08);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .sgd-bento-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 30px -10px rgba(15, 23, 42, 0.14);
-    }
-    .sgd-bento-card.promo-dark {
-        background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
-        color: #FFFFFF;
-        border-color: rgba(255, 255, 255, 0.12);
-    }
-
-    /* 3. Showroom "Compra por Acabado y Superficie" (Estilo Adidas / Falabella Deco) */
-    .sgd-finish-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border-radius: 1.25rem;
-        border: 1px solid #E2E8F0;
-        background: #FFFFFF;
-        overflow: hidden;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-        transition: transform 0.22s ease, box-shadow 0.22s ease;
-    }
-    .sgd-finish-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 18px 34px -10px rgba(15, 23, 42, 0.15);
-    }
-    .sgd-finish-header {
-        height: 10.5rem;
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        color: #FFFFFF;
-        position: relative;
-    }
-    .sgd-finish-header.mesas {
-        background:
-            radial-gradient(circle at 75% 25%, rgba(56, 189, 248, 0.45) 0%, transparent 55%),
-            linear-gradient(135deg, #3E2723 0%, #0369A1 52%, #0F172A 100%);
-    }
-    .sgd-finish-header.pisos {
-        background:
-            radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.28) 0%, transparent 50%),
-            linear-gradient(135deg, #0F172A 0%, #1D4ED8 55%, #334155 100%);
-    }
-    .sgd-finish-header.colorantes {
-        background:
-            radial-gradient(circle at 75% 30%, rgba(168, 85, 247, 0.4) 0%, transparent 50%),
-            linear-gradient(135deg, #0E7490 0%, #2563EB 52%, #4338CA 100%);
-    }
-    .sgd-spec-tag {
-        display: inline-block;
-        background: rgba(15, 23, 42, 0.65);
-        backdrop-filter: blur(6px);
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        color: #F8FAFC;
-        font-size: 0.68rem;
-        font-weight: 800;
-        padding: 0.25rem 0.65rem;
-        border-radius: 999px;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        width: fit-content;
-    }
-
-    /* 4. Franja de Fidelización y Beneficios Anti-Déficit (Trust Bar) */
-    .sgd-loyalty-grid {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr;
-    }
-    @media (min-width: 640px) {
-        .sgd-loyalty-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (min-width: 1024px) {
-        .sgd-loyalty-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-    .sgd-loyalty-item {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-top: 4px solid #2563EB;
-        border-radius: 1rem;
-        padding: 1.25rem;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-    }
-    .sgd-loyalty-item.highlight {
-        border-top-color: #E11D48;
-    }
-    .sgd-loyalty-item.green {
-        border-top-color: #16A34A;
-    }
-</style>
-
-<div class="sgd-landing">
-    <!-- ZONA 1: CINTILLO PROMOCIONAL ACTIVO (ESTILO SAGA FALABELLA / RIPLEY) -->
-    <aside aria-label="Promociones y beneficios activos" class="sgd-promo-strip">
-        <div class="sgd-promo-strip-items">
-            <span><span class="sgd-pill-hot">Oferta Miembros</span> <strong>-15% Directo</strong> en envases seleccionados al registrarte</span>
-            <span><span class="sgd-pill-green">Flete S/ 0</span> <strong>Transporte Hermético Gratis</strong> en compras desde S/ 260</span>
-            <span><strong>Combo Obra Segura:</strong> <strong>-12% en Materiales</strong> al agendar Técnico Instalador</span>
+        {% if form.non_field_errors %}
+        <div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-800" role="alert">
+            {{ form.non_field_errors }}
         </div>
-        <a href="{% url 'catalog:store_front' %}?ofertas=1" class="text-xs font-extrabold text-amber-300 hover:text-white underline underline-offset-4 whitespace-nowrap">
-            Ver rebajas activas →
-        </a>
-    </aside>
+        {% endif %}
 
-    <!-- ZONA 2: HERO EDITORIAL + BENTO GRID DE CAMPAÑA -->
-    <section aria-labelledby="portada-titulo" class="sgd-hero-grid">
-        <div class="sgd-hero-banner">
-            <div>
-                <p class="sgd-hero-kicker">
-                    <span class="inline-block h-2 w-2 rounded-full bg-[#84CC16]"></span>
-                    SGD Global Import · Sistemas Epóxicos de Grado Industrial
-                </p>
-                <h1 id="portada-titulo" class="mt-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                    Materiales, acabados cristalinos y soluciones para tus proyectos
-                </h1>
-                <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-200 sm:text-base">
-                    Encuentra kits de resina y catalizador con proporción exacta 2:1, micas perladas, tintas al alcohol y servicio de asesoría o instalación certificada bajo norma sanitaria para pisos y mesas de río.
-                </p>
-
-                <div class="sgd-hero-badges">
-                    <span class="sgd-hero-badge">🏷️ <strong>-15% Exclusivo</strong> en productos en oferta</span>
-                    <span class="sgd-hero-badge">🚚 <strong>Envío S/ 0</strong> desde S/ 260 en carrito</span>
-                    <span class="sgd-hero-badge">🎓 <strong>Asesoría + Ficha MINSA Gratis</strong> en Kits A+B</span>
-                </div>
-            </div>
-
-            <div class="mt-7 flex flex-wrap gap-3">
-                <a href="{% url 'catalog:store_front' %}" class="sgd-btn-crimson focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                    Explorar catálogo y ofertas
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </a>
-                <a href="{% url 'calculator:index' %}" class="sgd-btn-glass focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                    Estimador por medidas
-                </a>
-                <a href="{% url 'sales:solicitar_servicio' %}" class="sgd-btn-glass focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                    Conocer servicios (-12% en resinas)
-                </a>
-            </div>
+        {% for field in form %}
+        <div>
+            {% if field.name == "acepta_politicas" %}
+            <label for="{{ field.id_for_label }}" class="flex items-start gap-2 text-sm leading-5 text-slate-700">
+                {{ field }}
+                <span>{{ field.label }}</span>
+            </label>
+            {% else %}
+            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-[#313338]">{{ field.label }}</label>
+            <div class="mt-1">{{ field }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+            <p class="mt-1 text-xs font-semibold text-rose-700" role="alert">{{ error }}</p>
+            {% endfor %}
         </div>
+        {% endfor %}
 
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
-            <!-- Bento Card 1: Catálogo y Ofertas Exclusivas -->
-            <article class="sgd-bento-card">
-                <div>
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-rose-600">
-                            🔥 Oportunidades SGD
-                        </span>
-                        <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-                            Stock por lotes
-                        </span>
-                    </div>
-                    <h2 class="mt-3 text-xl font-extrabold text-[#0F172A]">Materiales, kits 2:1 y presentaciones en oferta</h2>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">
-                        Consulta resinas de baja viscosidad, autonivelantes para pisos, catalizadores y pigmentos. Los Kits Completos incluyen guía de aplicación y ficha técnica.
-                    </p>
-                </div>
-                <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-                    <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center gap-1.5 text-sm font-extrabold text-[#1D4ED8] hover:text-[#0F172A]">
-                        Ir al catálogo completo
-                        <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                    <a href="{% url 'catalog:store_front' %}?ofertas=1" class="text-xs font-extrabold bg-amber-100 text-amber-900 px-3 py-1.5 rounded-lg hover:bg-amber-200 transition">
-                        Solo ofertas (-15%)
-                    </a>
-                </div>
-            </article>
-
-            <!-- Bento Card 2: Combo Obra Segura (Material + Instalación Certificada) -->
-            <article class="sgd-bento-card promo-dark">
-                <div>
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-300">
-                            👷 Beneficio Obra Segura
-                        </span>
-                        <span class="text-xs font-extrabold bg-[#16A34A] text-white px-2.5 py-1 rounded-full">
-                            -12% Dcto. Materiales
-                        </span>
-                    </div>
-                    <h2 class="mt-3 text-xl font-extrabold text-white">Asesoría e instalación con descuento automático</h2>
-                    <p class="mt-2 text-sm leading-6 text-slate-200">
-                        Coordina tu proyecto de piso sanitario o mesa epóxica con nuestros especialistas certificados y obtén un descuento preferencial en tus materiales antes de emitir la proforma.
-                    </p>
-                </div>
-                <a href="{% url 'sales:solicitar_servicio' %}" class="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-[#84CC16] hover:text-white">
-                    Ver servicios y solicitar coordinación
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </a>
-            </article>
-        </div>
-    </section>
-
-    <!-- ZONA 3: SHOWROOM VISUAL "COMPRA POR ACABADO Y APLICACIÓN" (ESTILO ADIDAS / FALABELLA DECO) -->
-    <section aria-labelledby="proyectos-titulo">
-        <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div class="max-w-2xl">
-                <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-[#1D4ED8]">Vitrina de acabados y aplicaciones</p>
-                <h2 id="proyectos-titulo" class="mt-1.5 text-2xl font-extrabold tracking-tight text-[#0F172A] sm:text-3xl">
-                    Encuentra el sistema ideal según tu acabado
-                </h2>
-                <p class="mt-1.5 text-sm leading-6 text-slate-600">
-                    Selecciona el tipo de superficie que vas a trabajar para filtrar las resinas, espesores recomendados y paletas de color compatibles.
-                </p>
-            </div>
-            <a href="{% url 'catalog:store_front' %}" class="text-sm font-extrabold text-[#1D4ED8] hover:underline whitespace-nowrap">
-                Ver las 13 presentaciones →
-            </a>
-        </div>
-
-        <div class="grid gap-5 md:grid-cols-3">
-            <!-- Acabado 1: Mesas de Río y Encapsulados -->
-            <a href="{% url 'catalog:store_front' %}?categoria=MESAS" class="sgd-finish-card group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]">
-                <div>
-                    <div class="sgd-finish-header mesas">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="sgd-spec-tag">Espesor: 3 mm a 50 mm</span>
-                            <span class="text-[11px] font-extrabold bg-emerald-500/90 text-white px-2.5 py-0.5 rounded-full">
-                                Incluye Asesoría en Kits
-                            </span>
-                        </div>
-                        <div class="flex items-end justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-sky-200">Baja Viscosidad · Ratio 2:1</p>
-                                <p class="text-lg font-extrabold text-white leading-snug">Mesas de río y encapsulados</p>
-                            </div>
-                            <svg aria-hidden="true" focusable="false" viewBox="0 0 32 32" fill="none" class="h-9 w-9 shrink-0 text-sky-200"><path d="M5 10h22v4H5v-4Zm3 4v12m16-12v12M8 19h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 7c1.2-1.4 2.4-1.4 3.6 0 1.2 1.4 2.4 1.4 3.6 0 1.2-1.4 2.4-1.4 3.6 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        </div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="text-base font-extrabold text-[#0F172A] group-hover:text-[#1D4ED8]">Madera noble, río cristalino y mobiliario</h3>
-                        <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Resina epóxica cristalina de alta pureza (densidad 1.12 kg/L) con liberación rápida de burbujas en kits de 1.5 kg, 6 kg y 30 kg.
-                        </p>
-                    </div>
-                </div>
-                <div class="px-5 pb-5 pt-2 flex items-center justify-between text-sm font-extrabold text-[#1D4ED8]">
-                    <span>Explorar kits para mesas</span>
-                    <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
-                </div>
-            </a>
-
-            <!-- Acabado 2: Pisos Continuos Sanitarios -->
-            <a href="{% url 'catalog:store_front' %}?categoria=PISOS" class="sgd-finish-card group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]">
-                <div>
-                    <div class="sgd-finish-header pisos">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="sgd-spec-tag">Espesor: 1.5 mm a 3.0 mm</span>
-                            <span class="text-[11px] font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">
-                                Norma R.M. 822-2018/MINSA
-                            </span>
-                        </div>
-                        <div class="flex items-end justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-indigo-200">Autonivelante · Sin Fragua</p>
-                                <p class="text-lg font-extrabold text-white leading-snug">Pisos continuos sanitarios</p>
-                            </div>
-                            <svg aria-hidden="true" focusable="false" viewBox="0 0 32 32" fill="none" class="h-9 w-9 shrink-0 text-white"><path d="m5 11 11-6 11 6-11 6-11-6Zm0 5 11 6 11-6M5 21l11 6 11-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-                        </div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="text-base font-extrabold text-[#0F172A] group-hover:text-[#1D4ED8]">Clínicas, restaurantes y porcelanato líquido</h3>
-                        <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Superficies lisas, lavables y de alta resistencia mecánica en kits de 3 kg, baldes de 15 kg y tambores B2B de 60 kg.
-                        </p>
-                    </div>
-                </div>
-                <div class="px-5 pb-5 pt-2 flex items-center justify-between text-sm font-extrabold text-[#1D4ED8]">
-                    <span>Explorar sistemas para pisos</span>
-                    <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
-                </div>
-            </a>
-
-            <!-- Acabado 3: Micas Perladas y Laboratorio de Color -->
-            <a href="{% url 'palette_lab:lista' %}" class="sgd-finish-card group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]">
-                <div>
-                    <div class="sgd-finish-header colorantes">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="sgd-spec-tag">Dosificación: 1% a 3% (20g/kg)</span>
-                            <span class="text-[11px] font-extrabold bg-white/20 text-white px-2.5 py-0.5 rounded-full">
-                                Receta o Preparado
-                            </span>
-                        </div>
-                        <div class="flex items-end justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-cyan-200">Micas y Tintas al Alcohol</p>
-                                <p class="text-lg font-extrabold text-white leading-snug">Tonos, vetas y paletas</p>
-                            </div>
-                            <span aria-hidden="true" class="flex gap-1.5">
-                                <span class="h-6 w-6 rounded-full border-2 border-white bg-[#0284C7]"></span>
-                                <span class="h-6 w-6 rounded-full border-2 border-white bg-[#F8FAFC]"></span>
-                                <span class="h-6 w-6 rounded-full border-2 border-white bg-[#1D4ED8]"></span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="text-base font-extrabold text-[#0F172A] group-hover:text-[#1D4ED8]">Efectos marmoleados, metálicos y translúcidos</h3>
-                        <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Consulta recetas de color exactas en gramos para tu cantidad de resina o solicita que nuestro laboratorio entregue la mezcla lista.
-                        </p>
-                    </div>
-                </div>
-                <div class="px-5 pb-5 pt-2 flex items-center justify-between text-sm font-extrabold text-[#1D4ED8]">
-                    <span>Abrir laboratorio de paletas</span>
-                    <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
-                </div>
-            </a>
-        </div>
-    </section>
-
-    <!-- ZONA 4: FRANJA DE FIDELIZACIÓN Y GARANTÍAS (BLINDAJE COMERCIAL SGD) -->
-    <section aria-label="Programa de beneficios y garantías SGD" class="sgd-loyalty-grid">
-        <div class="sgd-loyalty-item green">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700">Logística Segura</span>
-            <h3 class="mt-1 text-base font-extrabold text-[#0F172A]">Transporte Hermético Gratis</h3>
-            <p class="mt-1.5 text-xs leading-5 text-slate-600">
-                Desbloquea <strong>Flete S/ 0 en Lima</strong> automáticamente en pedidos desde <strong>S/ 260</strong> (1 Kit Taller de 6 kg o Balde de 15 kg).
-            </p>
-        </div>
-
-        <div class="sgd-loyalty-item">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#1D4ED8]">Cero Riesgo de Mezcla</span>
-            <h3 class="mt-1 text-base font-extrabold text-[#0F172A]">Asesoría VIP + Ficha MINSA</h3>
-            <p class="mt-1.5 text-xs leading-5 text-slate-600">
-                Al llevar cualquier <strong>Kit Completo (A + B)</strong> recibes guía técnica anti-burbujas y documentación sanitaria R.M. 822-2018 sin costo extra.
-            </p>
-        </div>
-
-        <div class="sgd-loyalty-item highlight">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-rose-600">Beneficio Cruzado</span>
-            <h3 class="mt-1 text-base font-extrabold text-[#0F172A]">-12% con Técnico Instalador</h3>
-            <p class="mt-1.5 text-xs leading-5 text-slate-600">
-                Si agregas un especialista certificado para aplicar tu piso o mesa de río, activas un <strong>descuento preferencial sobre tus resinas</strong>.
-            </p>
-        </div>
-
-        <div class="sgd-loyalty-item">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#1D4ED8]">Carrito Inteligente 2:1</span>
-            <h3 class="mt-1 text-base font-extrabold text-[#0F172A]">Proporción Química Protegida</h3>
-            <p class="mt-1.5 text-xs leading-5 text-slate-600">
-                Empaquetamos juntos Resina Parte A, Catalizador Parte B y pigmentos dosificados en gramos para asegurar un curado perfecto.
-            </p>
-        </div>
-    </section>
-
-    <!-- ZONA 5: ACCESOS RÁPIDOS A HERRAMIENTAS DE SGD -->
-    <section aria-label="Herramientas de SGD" class="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-3">
-        <a href="{% url 'calculator:index' %}" class="flex items-start gap-3.5 rounded-xl bg-[#F8FAFC] border border-slate-200/80 p-4 transition hover:border-[#2563EB] hover:bg-indigo-50/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1D4ED8] text-white">
-                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-5 w-5"><path d="M4 19V5m0 14h16M7 15l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span>
-                <strong class="text-sm font-extrabold text-[#0F172A]">Estimador por medidas (RF-03)</strong>
-                <span class="mt-1 block text-xs leading-5 text-slate-600">Calcula kilos exactos de Resina A, Catalizador B, merma y gramos de pigmento según tus m².</span>
-            </span>
-        </a>
-
-        <a href="{% url 'catalog:store_front' %}?ofertas=1" class="flex items-start gap-3.5 rounded-xl bg-[#F8FAFC] border border-slate-200/80 p-4 transition hover:border-rose-400 hover:bg-rose-50/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E11D48] text-white">
-                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-5 w-5"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-            </div>
-            <span>
-                <strong class="text-sm font-extrabold text-[#0F172A]">Ofertas exclusivas (-15%)</strong>
-                <span class="mt-1 block text-xs leading-5 text-slate-600">Filtra al instante los kits de 1.5 kg, 3 kg, 6 kg, 15 kg y micas perladas con descuento activo.</span>
-            </span>
-        </a>
-
-        <a href="{% url 'sales:solicitar_servicio' %}" class="flex items-start gap-3.5 rounded-xl bg-[#F8FAFC] border border-slate-200/80 p-4 transition hover:border-emerald-500 hover:bg-emerald-50/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#16A34A] text-white">
-                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-5 w-5"><path d="M4 12h16M12 4v16M7 7h.01M17 7h.01M7 17h.01M17 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </div>
-            <span>
-                <strong class="text-sm font-extrabold text-[#0F172A]">Asesoría e instalación certificada</strong>
-                <span class="mt-1 block text-xs leading-5 text-slate-600">Agenda especialistas para tu obra y obtén precios preferenciales en todos tus insumos.</span>
-            </span>
-        </a>
-    </section>
-</div>
+        <button type="submit" class="w-full rounded-xl bg-[#5865F2] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
+            Registrarme e ingresar
+        </button>
+    </form>
+    <p class="mt-5 text-center text-xs text-slate-600">
+        ¿Ya tienes una cuenta?
+        <a href="{% url 'catalog:registro' %}?modo=login" class="font-bold text-[#4752C4] underline hover:text-[#313338]">Inicia sesión</a>
+    </p>
+    {% endif %}
+</section>
 {% endblock %}

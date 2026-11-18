@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from .models import Categoria, Formulacion, Producto, Presentacion, PropiedadFisica
 
@@ -85,3 +86,45 @@ class CatalogoORMTests(TestCase):
         self.assertContains(response, "presentaciones marcadas en oferta")
         self.assertNotContains(response, "certificado MINSA")
         self.assertNotContains(response, "calculadora")
+
+
+class RegistroClienteTests(TestCase):
+    def test_formulario_registro_esta_disponible_y_mantiene_login(self):
+        response = self.client.get("/registro/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context["form"])
+        self.assertContains(response, "acepta_politicas")
+        self.assertContains(response, "?modo=login")
+
+    def test_registro_exige_aceptar_politicas_y_muestra_el_error(self):
+        response = self.client.post(
+            "/registro/",
+            {
+                "first_name": "Cliente",
+                "last_name": "Prueba",
+                "username": "cliente-prueba",
+                "email": "cliente@example.test",
+                "password": "clave-segura",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Debes aceptar las Políticas de Miembros")
+        self.assertFalse(get_user_model().objects.filter(username="cliente-prueba").exists())
+
+    def test_registro_valido_inicia_sesion_y_lleva_a_ofertas_del_catalogo(self):
+        response = self.client.post(
+            "/registro/",
+            {
+                "first_name": "Cliente",
+                "last_name": "Prueba",
+                "username": "cliente-prueba",
+                "email": "cliente@example.test",
+                "password": "clave-segura",
+                "acepta_politicas": "on",
+            },
+        )
+
+        self.assertRedirects(response, "/catalogo/?ofertas=1")
+        self.assertTrue(response.wsgi_request.user.is_authenticated)

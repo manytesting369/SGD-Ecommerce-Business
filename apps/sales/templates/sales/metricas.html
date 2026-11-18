@@ -1,22 +1,65 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Métricas | SIGCE{% endblock %}
+{% block title %}Métricas del negocio | SGD Global Import{% endblock %}
 
 {% block content %}
+<style>
+    .sgd-kpi-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 1.25rem;
+        padding: 1.4rem 1.5rem;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sgd-kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 26px -10px rgba(15, 30, 54, 0.14);
+    }
+    .sgd-kpi-highlight {
+        background: linear-gradient(135deg, #0F1E36 0%, #166091 100%);
+        color: #FFFFFF;
+        border: none;
+    }
+</style>
+
 <section class="space-y-6">
-    <div>
-        <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Semana 4 · Resumen operativo</p>
-        <h1 class="mt-1 text-3xl font-bold text-[#313338]">Métricas del negocio</h1>
-        <p class="mt-2 text-slate-600">Indicadores calculados con los registros actuales del catálogo, recetas y pedidos.</p>
-    </div>
+    <header class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-[#166091]">Semana 4 · Panel Ejecutivo en PostgreSQL</p>
+            <h1 class="mt-1 text-3xl font-extrabold text-[#0F1E36]">Métricas del negocio</h1>
+            <p class="mt-1 text-sm text-slate-600">Indicadores consolidados en vivo desde el catálogo, laboratorio de color y órdenes registradas.</p>
+        </div>
+        <a href="{% url 'sales:recordatorios' %}" class="inline-flex items-center gap-2 rounded-xl bg-[#0F1E36] px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-[#166091]">
+            Ver seguimientos quincenales →
+        </a>
+    </header>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Materiales activos</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ productos_activos }}</p></article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Presentaciones activas</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ presentaciones_activas }}</p></article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Recetas de color</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ paletas_guardadas }}</p></article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Pedidos no anulados</p><p class="mt-2 text-3xl font-bold text-[#313338]">{{ pedidos }}</p></article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Importe registrado en pedidos</p><p class="mt-2 text-3xl font-bold text-[#313338]">S/ {{ importe_pedidos|floatformat:2 }}</p></article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Seguimientos vencidos</p><p class="mt-2 text-3xl font-bold {% if recordatorios_pendientes %}text-amber-700{% else %}text-[#313338]{% endif %}">{{ recordatorios_pendientes }}</p></article>
+        <article class="sgd-kpi-card">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Materiales activos</p>
+            <p class="mt-2 text-3xl font-extrabold text-[#0F1E36]">{{ productos_activos }}</p>
+        </article>
+        <article class="sgd-kpi-card">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Presentaciones activas</p>
+            <p class="mt-2 text-3xl font-extrabold text-[#0F1E36]">{{ presentaciones_activas }}</p>
+        </article>
+        <article class="sgd-kpi-card">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Recetas de color</p>
+            <p class="mt-2 text-3xl font-extrabold text-[#166091]">{{ paletas_guardadas }}</p>
+        </article>
+        <article class="sgd-kpi-card">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Pedidos válidos</p>
+            <p class="mt-2 text-3xl font-extrabold text-[#0F1E36]">{{ pedidos }}</p>
+        </article>
+        <article class="sgd-kpi-card sgd-kpi-highlight">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-sky-200">Importe registrado</p>
+            <p class="mt-2 text-3xl font-extrabold text-white">S/ {{ importe_pedidos|floatformat:2 }}</p>
+        </article>
+        <article class="sgd-kpi-card">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Seguimientos pendientes</p>
+            <p class="mt-2 text-3xl font-extrabold {% if recordatorios_pendientes %}text-[#E11D48]{% else %}text-[#16A34A]{% endif %}">{{ recordatorios_pendientes }}</p>
+        </article>
     </div>
 </section>
 {% endblock %}

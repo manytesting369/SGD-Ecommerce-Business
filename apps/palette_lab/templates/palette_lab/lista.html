@@ -1,152 +1,83 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Paletas de color | SIGCE{% endblock %}
+{% block title %}Laboratorio de color y paletas | SGD Global Import{% endblock %}
 
 {% block content %}
-<section class="space-y-6">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">Semana 4 · Laboratorio de color</p>
-            <h1 class="mt-1 text-3xl font-bold text-[#313338]">Recetas de color</h1>
-            <p class="mt-2 max-w-2xl text-slate-600">Guarda una receta de pigmentos y consulta las cantidades calculadas para una cantidad de resina.</p>
-        </div>
-        <a href="{% url 'palette_lab:crear' %}" class="inline-flex items-center justify-center rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-            Crear receta
-        </a>
-    </div>
-
-    <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-4 text-sm text-indigo-950">
-        <strong>Nota:</strong> el color mostrado es una referencia visual. El resultado real puede variar según la resina, el pigmento y la superficie.
-    </div>
-
-    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="visor-titulo">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-wide text-[#4752C4]">Vista de referencia · sin dependencias externas</p>
-                <h2 id="visor-titulo" class="mt-1 text-xl font-extrabold text-[#313338]">Previsualizador de superficies</h2>
-                <p class="mt-1 text-sm text-slate-600">Explora de forma ilustrativa cómo puede verse un pigmento en una superficie resinada.</p>
-            </div>
-            <a href="/#estimador-medidas" class="text-sm font-bold text-[#4752C4] underline underline-offset-2 hover:text-[#313338]">Estimar las medidas del proyecto</a>
-        </div>
-
-        <div class="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-center">
-            <div class="preview-stage" id="preview-stage" data-surface="mesa">
-                <div class="preview-object" aria-hidden="true">
-                    <div class="preview-top"></div>
-                    <div class="preview-side"></div>
-                </div>
-                <p class="preview-caption" id="preview-caption">Mesa de río · madera encapsulada</p>
-            </div>
-            <div class="space-y-4">
-                <fieldset>
-                    <legend class="text-sm font-bold text-[#313338]">Superficie</legend>
-                    <div class="mt-2 grid gap-2">
-                        <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm hover:bg-[#F2F3F5]">
-                            <input type="radio" name="preview-surface" value="mesa" checked class="accent-[#5865F2]">
-                            Mesa de río encapsulada
-                        </label>
-                        <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm hover:bg-[#F2F3F5]">
-                            <input type="radio" name="preview-surface" value="piso" class="accent-[#5865F2]">
-                            Piso continuo
-                        </label>
-                    </div>
-                </fieldset>
-                <div>
-                    <label for="preview-color" class="text-sm font-bold text-[#313338]">Pigmento de referencia</label>
-                    <div class="mt-2 flex items-center gap-3">
-                        <input id="preview-color" type="color" value="#26C6DA" class="h-11 w-14 cursor-pointer rounded border border-slate-300 bg-white p-1">
-                        <span id="preview-color-value" class="font-mono text-sm text-slate-700">#26C6DA</span>
-                    </div>
-                    <div class="mt-3 flex flex-wrap gap-2" aria-label="Colores de pigmentos de muestra">
-                        <button type="button" data-preview-color="#26C6DA" aria-label="Mica turquesa" class="h-8 w-8 rounded-full border border-slate-300 bg-[#26C6DA] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"></button>
-                        <button type="button" data-preview-color="#FFFFFF" aria-label="Mica blanca" class="h-8 w-8 rounded-full border border-slate-400 bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"></button>
-                        <button type="button" data-preview-color="#0C2478" aria-label="Tinta zafiro" class="h-8 w-8 rounded-full border border-slate-300 bg-[#0C2478] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"></button>
-                    </div>
-                </div>
-                <p class="text-xs leading-5 text-slate-600">La vista es una representación visual aproximada, no una simulación física ni una garantía del tono final.</p>
-            </div>
-        </div>
-    </section>
-
-    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {% for paleta in paletas %}
-        <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div class="h-3" style="background-color: {{ paleta.color_resultante_hex }};"></div>
-            <div class="space-y-4 p-5">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ paleta.get_superficie_3d_display }}</p>
-                    <h2 class="mt-1 text-xl font-bold text-[#313338]">{{ paleta.nombre }}</h2>
-                </div>
-                <dl class="grid grid-cols-2 gap-3 text-sm">
-                    <div class="rounded-lg bg-[#F2F3F5] p-3"><dt class="text-slate-500">Resina</dt><dd class="font-semibold">{{ paleta.peso_resina_kg }} kg</dd></div>
-                    <div class="rounded-lg bg-[#F2F3F5] p-3"><dt class="text-slate-500">Pigmento total</dt><dd class="font-semibold">{{ paleta.dosificacion_pct }}%</dd></div>
-                </dl>
-                <div>
-                    <h3 class="text-sm font-semibold text-[#313338]">Pigmentos de la receta</h3>
-                    <ul class="mt-2 space-y-1 text-sm text-slate-600">
-                        {% for detalle in paleta.pigmentos.all %}
-                        <li class="flex justify-between gap-3"><span>{{ detalle.pigmento.nombre }} ({{ detalle.porcentaje }}%)</span><strong class="whitespace-nowrap">{{ detalle.gramos }} g</strong></li>
-                        {% empty %}
-                        <li>No hay pigmentos en esta receta.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% if paleta.preparado_empresa %}
-                <p class="rounded-lg bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-900">Preparación en tienda · S/ {{ paleta.cargo_preparacion }}</p>
-                {% endif %}
-            </div>
-        </article>
-        {% empty %}
-        <div class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center md:col-span-2 xl:col-span-3">
-            <h2 class="font-semibold text-[#313338]">Todavía no hay recetas guardadas</h2>
-            <p class="mt-2 text-sm text-slate-600">Inicia sesión con una cuenta del equipo para guardar la primera receta.</p>
-        </div>
-        {% endfor %}
-    </div>
-</section>
 <style>
+    .sgd-lab-banner {
+        background: linear-gradient(120deg, #0F1E36 0%, #166091 100%);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        color: #FFFFFF;
+        box-shadow: 0 18px 36px -14px rgba(15, 30, 54, 0.35);
+    }
     .preview-stage {
         --preview-color: #26C6DA;
+        --preview-accent: #FFFFFF;
         position: relative;
         display: grid;
-        min-height: 18rem;
+        min-height: 21rem;
         place-items: center;
         overflow: hidden;
         border: 1px solid #E2E8F0;
-        border-radius: 1rem;
-        background: radial-gradient(ellipse at 50% 70%, #E8EAF2 0, #F2F3F5 55%, #fff 100%);
-        perspective: 900px;
+        border-radius: 1.25rem;
+        background: radial-gradient(ellipse at 50% 68%, #E0F2FE 0%, #F1F5F9 55%, #FFFFFF 100%);
+        perspective: 950px;
     }
     .preview-object {
         position: relative;
-        width: min(72%, 25rem);
+        width: min(74%, 26rem);
         aspect-ratio: 1.65;
         transform: rotateX(56deg) rotateZ(-8deg);
         transform-style: preserve-3d;
-        transition: transform 300ms ease;
+        transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .preview-top {
         position: absolute;
         inset: 0;
         overflow: hidden;
         border: 8px solid #7A5438;
-        border-radius: 0.6rem;
+        border-radius: 0.65rem;
         background:
             radial-gradient(ellipse at 25% 35%, rgb(255 255 255 / 62%), transparent 14%),
-            radial-gradient(ellipse at 68% 63%, color-mix(in srgb, var(--preview-color) 85%, transparent), transparent 28%),
-            radial-gradient(ellipse at 42% 72%, color-mix(in srgb, var(--preview-color) 70%, transparent), transparent 22%),
+            radial-gradient(ellipse at 68% 63%, color-mix(in srgb, var(--preview-color) var(--preview-strength, 70%), transparent), transparent 32%),
+            radial-gradient(ellipse at 36% 70%, color-mix(in srgb, var(--preview-accent) 62%, transparent), transparent 24%),
             linear-gradient(135deg, rgb(255 255 255 / 58%), transparent 45%),
             repeating-linear-gradient(3deg, #8B6344 0 7px, #A77D59 8px 11px);
-        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 65%), 0 18px 25px rgb(49 51 56 / 24%);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 65%), 0 18px 28px rgb(15 30 54 / 26%);
         transition: background 250ms ease;
     }
-    .preview-stage[data-surface="piso"] .preview-top {
+    .preview-top::after {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, transparent 25%, rgb(255 255 255 / 75%) 48%, transparent 68%);
+        content: "";
+        opacity: var(--preview-shine, 0.8);
+        mix-blend-mode: screen;
+        pointer-events: none;
+        transition: opacity 250ms ease;
+    }
+    .preview-stage[data-finish="tinta"] .preview-top {
+        background:
+            radial-gradient(ellipse at 25% 35%, rgb(255 255 255 / 72%), transparent 18%),
+            radial-gradient(ellipse at 60% 55%, color-mix(in srgb, var(--preview-color) var(--preview-strength, 70%), transparent), transparent 44%),
+            radial-gradient(ellipse at 35% 70%, color-mix(in srgb, var(--preview-accent) 45%, transparent), transparent 30%),
+            linear-gradient(135deg, rgb(255 255 255 / 64%), transparent 48%),
+            repeating-linear-gradient(3deg, #8B6344 0 7px, #A77D59 8px 11px);
+    }
+    .preview-stage[data-finish="solido"] .preview-top {
+        background:
+            radial-gradient(ellipse at 35% 60%, color-mix(in srgb, var(--preview-accent) 55%, transparent), transparent 28%),
+            linear-gradient(135deg, rgb(255 255 255 / 42%), transparent 48%),
+            linear-gradient(115deg, color-mix(in srgb, var(--preview-color) var(--preview-strength, 70%), #FFFFFF), var(--preview-color));
+    }
+    .preview-stage[data-surface="piso"][data-finish="mica"] .preview-top {
         border: 10px solid #D7D9E1;
         border-radius: 0.25rem;
         background:
             radial-gradient(ellipse at 25% 35%, rgb(255 255 255 / 68%), transparent 15%),
-            radial-gradient(ellipse at 68% 63%, color-mix(in srgb, var(--preview-color) 78%, transparent), transparent 30%),
-            radial-gradient(ellipse at 42% 72%, color-mix(in srgb, var(--preview-color) 65%, transparent), transparent 23%),
+            radial-gradient(ellipse at 68% 63%, color-mix(in srgb, var(--preview-color) var(--preview-strength, 70%), transparent), transparent 32%),
+            radial-gradient(ellipse at 38% 72%, color-mix(in srgb, var(--preview-accent) 55%, transparent), transparent 24%),
             linear-gradient(135deg, rgb(255 255 255 / 76%), transparent 45%),
             repeating-linear-gradient(0deg, transparent 0 49%, #D7D9E1 50% 50.5%, transparent 51%),
             repeating-linear-gradient(90deg, #E9EAF0 0 49%, #D7D9E1 50% 50.5%, #E9EAF0 51% 100%);
@@ -157,7 +88,7 @@
         transform: translateZ(-1.3rem) translateY(1.3rem);
         border-radius: 0.3rem;
         background: linear-gradient(90deg, #58402E, #846044);
-        box-shadow: 0 22px 24px rgb(49 51 56 / 18%);
+        box-shadow: 0 22px 24px rgb(15 30 54 / 18%);
     }
     .preview-stage[data-surface="piso"] .preview-side {
         transform: translateZ(-0.65rem) translateY(0.65rem);
@@ -168,30 +99,236 @@
         bottom: 1rem;
         left: 1rem;
         border-radius: 999px;
-        background: #313338;
-        padding: 0.45rem 0.85rem;
+        background: #0F1E36;
+        padding: 0.45rem 0.9rem;
         color: white;
         font-size: 0.75rem;
         font-weight: 700;
     }
-    @media (prefers-reduced-motion: reduce) {
-        .preview-object, .preview-top { transition: none; }
-    }
 </style>
+
+<section class="space-y-6">
+    <!-- Banner Superior -->
+    <div class="sgd-lab-banner flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-sky-200">Semana 4 · Laboratorio de color 3D</p>
+            <h1 class="mt-1.5 text-3xl font-extrabold tracking-tight">Recetas de color</h1>
+            <p class="mt-1.5 max-w-2xl text-sm text-slate-200">
+                Combina tonos, prueba acabados en superficie 3D y guarda fórmulas exactas en gramos para tu proyecto.
+            </p>
+        </div>
+        <a href="{% url 'palette_lab:crear' %}" class="inline-flex items-center justify-center rounded-xl bg-[#E11D48] px-5 py-3 text-sm font-extrabold text-white shadow transition hover:bg-rose-700">
+            + Crear receta
+        </a>
+    </div>
+
+    <!-- Simulador 3D Flexible (Color Base + Veta Secundaria + HEX editable + Cámara) -->
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="visor-titulo">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-xs font-extrabold uppercase tracking-wider text-[#166091]">Vista de referencia · sin dependencias externas</p>
+                <h2 id="visor-titulo" class="mt-1 text-xl font-extrabold text-[#0F1E36]">Previsualizador de superficies</h2>
+                <p class="mt-1 text-sm text-slate-600">Prueba el color principal y una veta secundaria sobre mesa de río o piso continuo.</p>
+            </div>
+            <a href="{% url 'calculator:index' %}" class="text-sm font-bold text-[#166091] underline underline-offset-2 hover:text-[#0F1E36]">Estimar las medidas del proyecto</a>
+        </div>
+
+        <div class="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+            <div class="preview-stage" id="preview-stage" data-surface="mesa" data-finish="mica">
+                <div class="preview-object" aria-hidden="true">
+                    <div class="preview-top"></div>
+                    <div class="preview-side"></div>
+                </div>
+                <p class="preview-caption" id="preview-caption">Mesa de río · madera encapsulada</p>
+            </div>
+
+            <div class="space-y-4">
+                <fieldset>
+                    <legend class="text-sm font-extrabold text-[#0F1E36]">Superficie</legend>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        <label class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-[#0F1E36] hover:bg-sky-50">
+                            <input type="radio" name="preview-surface" value="mesa" checked class="accent-[#166091]">
+                            Mesa de río
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-[#0F1E36] hover:bg-sky-50">
+                            <input type="radio" name="preview-surface" value="piso" class="accent-[#166091]">
+                            Piso continuo
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="preview-color" class="text-xs font-extrabold text-[#0F1E36]">Color principal</label>
+                        <div class="mt-1.5 flex items-center gap-2">
+                            <input id="preview-color" type="color" value="#26C6DA" class="h-10 w-12 cursor-pointer rounded-lg border border-slate-300 bg-white p-0.5">
+                            <span id="preview-color-value" class="font-mono text-xs font-bold text-slate-700">#26C6DA</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="preview-accent" class="text-xs font-extrabold text-[#0F1E36]">Veta / marmoleado</label>
+                        <div class="mt-1.5 flex items-center gap-2">
+                            <input id="preview-accent" type="color" value="#FFFFFF" class="h-10 w-12 cursor-pointer rounded-lg border border-slate-300 bg-white p-0.5">
+                            <span id="preview-accent-value" class="font-mono text-xs font-bold text-slate-700">#FFFFFF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-xs font-bold text-slate-500">Muestras rápidas de catálogo</p>
+                    <div class="mt-2 flex flex-wrap gap-2" aria-label="Colores de pigmentos de muestra">
+                        <button type="button" data-preview-color="#26C6DA" aria-label="Mica turquesa" class="h-7 w-7 rounded-full border border-slate-300 bg-[#26C6DA]"></button>
+                        <button type="button" data-preview-color="#FFFFFF" aria-label="Mica blanca" class="h-7 w-7 rounded-full border border-slate-400 bg-white"></button>
+                        <button type="button" data-preview-color="#0C2478" aria-label="Tinta zafiro" class="h-7 w-7 rounded-full border border-slate-300 bg-[#0C2478]"></button>
+                        <button type="button" data-preview-color="#D4AF37" aria-label="Mica dorada" class="h-7 w-7 rounded-full border border-slate-300 bg-[#D4AF37]"></button>
+                        <button type="button" data-preview-color="#10B981" aria-label="Verde esmeralda" class="h-7 w-7 rounded-full border border-slate-300 bg-[#10B981]"></button>
+                        <button type="button" data-preview-color="#E11D48" aria-label="Rojo rubí" class="h-7 w-7 rounded-full border border-slate-300 bg-[#E11D48]"></button>
+                        <button type="button" data-preview-color="#1F2937" aria-label="Negro obsidiana" class="h-7 w-7 rounded-full border border-slate-300 bg-[#1F2937]"></button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="preview-finish" class="text-xs font-extrabold text-[#0F1E36]">Acabado epóxico</label>
+                    <select id="preview-finish" class="mt-1.5 block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-[#0F1E36] focus:border-[#166091] focus:outline-none">
+                        <option value="mica">Mica perlada</option>
+                        <option value="tinta">Tinta translúcida</option>
+                        <option value="solido">Pigmento sólido</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="preview-dosage" class="flex items-center justify-between gap-3 text-xs font-extrabold text-[#0F1E36]">
+                        Dosificación de referencia
+                        <output id="preview-dosage-value" for="preview-dosage" class="rounded bg-sky-50 px-2 py-0.5 text-[#166091]">2%</output>
+                    </label>
+                    <input id="preview-dosage" type="range" min="1" max="3" step="1" value="2" class="mt-1.5 w-full accent-[#166091]">
+                </div>
+
+                <fieldset>
+                    <legend class="text-xs font-extrabold text-[#0F1E36]">Perspectiva / rotación 3D</legend>
+                    <div class="mt-1.5 grid grid-cols-3 gap-1.5">
+                        <button type="button" data-preview-camera="perspectiva" aria-pressed="true" class="rounded-lg border border-[#166091] bg-sky-50 px-2 py-2 text-[11px] font-bold text-[#0F1E36]">Perspectiva 3D</button>
+                        <button type="button" data-preview-camera="superior" aria-pressed="false" class="rounded-lg border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50">Vista superior</button>
+                        <button type="button" data-preview-camera="espesor" aria-pressed="false" class="rounded-lg border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50">Ver espesor</button>
+                    </div>
+                </fieldset>
+
+                <a id="preview-use-color" href="{% url 'palette_lab:crear' %}" class="inline-flex w-full items-center justify-center rounded-xl bg-[#0F1E36] px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-[#166091]">
+                    Usar este color en nueva receta
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Listado de Paletas Guardadas (con Editar / Eliminar para staff) -->
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {% for paleta in paletas %}
+        <article class="flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md">
+            <div>
+                <div class="h-3.5" style="background-color: {{ paleta.color_resultante_hex }};"></div>
+                <div class="space-y-4 p-5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#166091]">{{ paleta.get_superficie_3d_display }}</p>
+                            <h2 class="mt-0.5 text-lg font-extrabold text-[#0F1E36]">{{ paleta.nombre }}</h2>
+                        </div>
+                        <span class="rounded-md bg-slate-100 px-2 py-1 font-mono text-[11px] font-bold text-slate-600">{{ paleta.color_resultante_hex }}</span>
+                    </div>
+
+                    <dl class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Resina</dt><dd class="font-extrabold text-[#0F1E36]">{{ paleta.peso_resina_kg }} kg</dd></div>
+                        <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Pigmento total</dt><dd class="font-extrabold text-[#0F1E36]">{{ paleta.dosificacion_pct }}%</dd></div>
+                    </dl>
+
+                    <div>
+                        <h3 class="text-xs font-extrabold uppercase tracking-wide text-slate-500">Pigmentos de la receta</h3>
+                        <ul class="mt-2 space-y-1.5 text-sm text-slate-700">
+                            {% for detalle in paleta.pigmentos.all %}
+                            <li class="flex justify-between gap-3"><span>{{ detalle.pigmento.nombre }} ({{ detalle.porcentaje }}%)</span><strong class="whitespace-nowrap text-[#0F1E36]">{{ detalle.gramos }} g</strong></li>
+                            {% empty %}
+                            <li class="text-xs text-slate-400">No hay pigmentos en esta receta.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    {% if paleta.preparado_empresa %}
+                    <p class="rounded-xl bg-sky-50 px-3 py-2 text-xs font-extrabold text-[#0F1E36]">Preparación en tienda · S/ {{ paleta.cargo_preparacion }}</p>
+                    {% else %}
+                    <p class="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-[#16A34A]">Receta gratuita · S/ 0.00</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.is_staff %}
+            <div class="flex items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3">
+                <a href="{% url 'palette_lab:editar' paleta.pk %}" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-[#0F1E36] hover:border-[#166091] hover:text-[#166091]">
+                    Editar receta
+                </a>
+                <form method="post" action="{% url 'palette_lab:eliminar' paleta.pk %}" onsubmit="return confirm('¿Eliminar esta receta?');">
+                    {% csrf_token %}
+                    <button type="submit" class="rounded-lg px-3 py-1.5 text-xs font-bold text-[#E11D48] hover:bg-rose-50">
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </article>
+        {% empty %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center md:col-span-2 xl:col-span-3">
+            <h2 class="font-extrabold text-[#0F1E36]">Todavía no hay recetas guardadas</h2>
+            <p class="mt-2 text-sm text-slate-600">Inicia sesión con una cuenta del equipo para guardar la primera receta.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 <script>
     (() => {
         const stage = document.getElementById("preview-stage");
         const picker = document.getElementById("preview-color");
+        const accentPicker = document.getElementById("preview-accent");
         const colorLabel = document.getElementById("preview-color-value");
+        const accentLabel = document.getElementById("preview-accent-value");
         const caption = document.getElementById("preview-caption");
-        if (!stage || !picker || !colorLabel || !caption) return;
+        const finish = document.getElementById("preview-finish");
+        const dosage = document.getElementById("preview-dosage");
+        const dosageValue = document.getElementById("preview-dosage-value");
+        const recipeLink = document.getElementById("preview-use-color");
+        const previewObject = stage?.querySelector(".preview-object");
+        if (!stage || !picker || !colorLabel || !caption || !finish || !dosage || !dosageValue || !recipeLink || !previewObject) return;
+
+        const updateRecipeLink = () => {
+            const params = new URLSearchParams({
+                hex: picker.value.toUpperCase(),
+                superficie: stage.dataset.surface === "piso" ? "PISO" : "MESA_RIO",
+                dosificacion: dosage.value
+            });
+            recipeLink.href = `{% url 'palette_lab:crear' %}?${params.toString()}`;
+        };
 
         const setColor = (color) => {
             stage.style.setProperty("--preview-color", color);
             picker.value = color;
             colorLabel.textContent = color.toUpperCase();
+            updateRecipeLink();
         };
+
+        const setAccent = (color) => {
+            stage.style.setProperty("--preview-accent", color);
+            if (accentPicker) accentPicker.value = color;
+            if (accentLabel) accentLabel.textContent = color.toUpperCase();
+        };
+
+        const updateDosage = () => {
+            const value = Number(dosage.value);
+            dosageValue.value = `${value}%`;
+            stage.style.setProperty("--preview-strength", `${40 + value * 15}%`);
+            stage.style.setProperty("--preview-shine", String((0.3 + value * 0.2) * (finish.value === "mica" ? 1 : finish.value === "tinta" ? 0.65 : 0.4)));
+            updateRecipeLink();
+        };
+
         picker.addEventListener("input", () => setColor(picker.value));
+        if (accentPicker) accentPicker.addEventListener("input", () => setAccent(accentPicker.value));
         document.querySelectorAll("[data-preview-color]").forEach((button) => {
             button.addEventListener("click", () => setColor(button.dataset.previewColor));
         });
@@ -202,8 +339,33 @@
                 caption.textContent = radio.value === "mesa"
                     ? "Mesa de río · madera encapsulada"
                     : "Piso continuo · superficie sanitaria";
+                updateRecipeLink();
             });
         });
+        finish.addEventListener("change", () => {
+            stage.dataset.finish = finish.value;
+            updateDosage();
+        });
+        dosage.addEventListener("input", updateDosage);
+        document.querySelectorAll("[data-preview-camera]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const cameras = {
+                    perspectiva: "rotateX(56deg) rotateZ(-8deg)",
+                    superior: "rotateX(0deg) rotateZ(0deg)",
+                    espesor: "rotateX(76deg) rotateZ(-8deg)"
+                };
+                previewObject.style.transform = cameras[button.dataset.previewCamera];
+                document.querySelectorAll("[data-preview-camera]").forEach((cameraButton) => {
+                    const selected = cameraButton === button;
+                    cameraButton.setAttribute("aria-pressed", String(selected));
+                    cameraButton.classList.toggle("border-[#166091]", selected);
+                    cameraButton.classList.toggle("bg-sky-50", selected);
+                    cameraButton.classList.toggle("text-[#0F1E36]", selected);
+                });
+            });
+        });
+        updateRecipeLink();
+        updateDosage();
     })();
 </script>
 {% endblock %}

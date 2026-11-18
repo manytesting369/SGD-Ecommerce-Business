@@ -1,32 +1,95 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Carrito de compras | SIGCE{% endblock %}
+{% block title %}Carrito de compras | SGD Global Import{% endblock %}
 
 {% block content %}
-<section class="space-y-7">
-    <header class="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-7">
-        <div>
-            <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#4752C4]">Tu selección · SGD Global Import</p>
-            <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-[#313338]">Carrito de compras</h1>
-            <p class="mt-2 text-sm text-slate-600">Revisa tus materiales y cantidades antes de finalizar.</p>
-        </div>
-        <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center justify-center gap-2 self-start rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-[#313338] transition hover:border-[#5865F2] hover:text-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] sm:self-center">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
-                <path d="M16 10H4m5 5-5-5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Seguir comprando
+<style>
+    .sgd-step-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 1.25rem;
+        padding: 1rem 1.35rem;
+        box-shadow: 0 4px 16px -6px rgba(15, 30, 54, 0.08);
+    }
+    .sgd-summary-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        box-shadow: 0 14px 30px -12px rgba(15, 30, 54, 0.14);
+    }
+    .sgd-summary-head {
+        background: linear-gradient(120deg, #0F1E36 0%, #166091 100%);
+        color: #FFFFFF;
+        padding: 1.15rem 1.35rem;
+    }
+    .sgd-cta-primary {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.9rem 1.2rem;
+        border-radius: 0.9rem;
+        background: #E11D48;
+        color: #FFFFFF;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 10px 22px -8px rgba(225, 29, 72, 0.45);
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .sgd-cta-primary:hover {
+        background: #BE123C;
+        transform: translateY(-1px);
+    }
+</style>
+
+<section class="space-y-6">
+    <!-- Barra de progreso de compra -->
+    <nav aria-label="Pasos de compra" class="sgd-step-bar">
+        <ol class="flex flex-wrap items-center gap-3 text-xs font-bold sm:text-sm">
+            <li class="inline-flex items-center gap-2 text-[#0F1E36]">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-[#0F1E36] text-xs font-extrabold text-white">1</span>
+                Bolsa de compra
+            </li>
+            <li aria-hidden="true" class="text-slate-300">→</li>
+            <li class="inline-flex items-center gap-2 text-slate-400">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-slate-100 text-xs text-slate-500">2</span>
+                Datos y pago
+            </li>
+            <li aria-hidden="true" class="text-slate-300">→</li>
+            <li class="inline-flex items-center gap-2 text-slate-400">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-slate-100 text-xs text-slate-500">3</span>
+                Confirmación
+            </li>
+        </ol>
+        <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-extrabold text-[#0F1E36] transition hover:border-[#166091] hover:text-[#166091]">
+            ← Seguir comprando
         </a>
+    </nav>
+
+    <header class="px-1">
+        <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-[#166091]">Tienda SGD Global Import</p>
+        <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-[#0F1E36]">Tu carrito de compras</h1>
+        <p class="mt-1 text-sm text-slate-600">Verifica presentaciones, kits A+B y existencias antes de finalizar tu pedido.</p>
     </header>
 
     {% if lineas %}
     <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div class="space-y-4">
             <div class="flex items-center justify-between px-1">
-                <h2 class="text-sm font-bold uppercase tracking-wide text-slate-600">Productos seleccionados</h2>
-                <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-[#4752C4]">{{ cantidad_articulos }} artículos</span>
+                <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Artículos seleccionados</h2>
+                <span class="rounded-full bg-sky-50 px-3 py-1 text-xs font-extrabold text-[#166091]">{{ cantidad_articulos }} artículo(s)</span>
             </div>
+
             {% for linea in lineas %}
-            <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md">
+            <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:border-[#166091]/40 hover:shadow-md">
                 <div class="flex flex-col gap-4 p-4 sm:flex-row sm:p-5">
                     {% if linea.disponible %}
                     <img
@@ -35,40 +98,40 @@
                         loading="lazy"
                         decoding="async"
                         onerror="this.onerror=null; this.src='/media/productos/RES-BAJA-VISC.svg';"
-                        class="h-24 w-24 shrink-0 self-start rounded-xl border border-slate-200 bg-[#F2F3F5] object-cover"
+                        class="h-24 w-24 shrink-0 self-start rounded-xl border border-slate-200 bg-slate-50 object-cover"
                     >
                     {% else %}
-                    <span class="grid h-24 w-24 shrink-0 place-items-center self-start rounded-xl border border-slate-200 bg-[#F2F3F5] text-slate-400">
-                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-8 w-8">
+                    <span class="grid h-24 w-24 shrink-0 place-items-center self-start rounded-xl border border-slate-200 bg-slate-50 text-slate-400">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-8 w-8">
                             <path d="M5 6.5 12 3l7 3.5v11L12 21l-7-3.5v-11Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                            <path d="m5.5 6.8 6.5 3.4 6.5-3.4M12 10.2V20" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
                         </svg>
                     </span>
                     {% endif %}
+
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-start justify-between gap-3">
                             <div>
                                 {% if linea.disponible %}
-                                <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-[#4752C4]">{{ linea.presentacion.sku }}</p>
-                                <h3 class="mt-1 text-base font-extrabold text-[#313338]">{{ linea.presentacion.producto.nombre }}</h3>
+                                <p class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#166091]">{{ linea.presentacion.sku }}</p>
+                                <h3 class="mt-0.5 text-base font-extrabold text-[#0F1E36]">{{ linea.presentacion.producto.nombre }}</h3>
                                 <p class="mt-0.5 text-sm text-slate-600">{{ linea.presentacion.nombre_envase }} · {{ linea.presentacion.cantidad_neta }} {{ linea.presentacion.unidad_medida }}</p>
                                 {% else %}
-                                <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-rose-700">Revisar selección</p>
-                                <h3 class="mt-1 text-base font-extrabold text-[#313338]">{{ linea.nombre }}</h3>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-rose-700">Revisar selección</p>
+                                <h3 class="mt-0.5 text-base font-extrabold text-[#0F1E36]">{{ linea.nombre }}</h3>
                                 <p class="mt-0.5 text-sm text-rose-700">Este material ya no está disponible en el catálogo.</p>
                                 {% endif %}
                             </div>
                             <div class="min-w-28 text-left sm:text-right">
                                 {% if linea.disponible %}
                                 {% if linea.presentacion.en_oferta and user.is_authenticated %}
-                                <p class="text-xs text-slate-500 line-through">Normal: S/ {{ linea.presentacion.precio_venta }}</p>
-                                <p class="text-[11px] font-bold uppercase tracking-wide text-emerald-700">Precio miembro</p>
+                                <p class="text-xs text-slate-400 line-through">S/ {{ linea.presentacion.precio_venta }}</p>
+                                <span class="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[#16A34A]">Oferta miembro</span>
                                 {% elif linea.presentacion.en_oferta %}
                                 <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Precio normal</p>
                                 {% else %}
-                                <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Precio por unidad</p>
+                                <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Precio unitario</p>
                                 {% endif %}
-                                <p class="text-lg font-extrabold text-[#313338]">S/ {{ linea.precio_unitario }}</p>
+                                <p class="mt-0.5 text-lg font-extrabold text-[#0F1E36]">S/ {{ linea.precio_unitario }}</p>
                                 {% else %}
                                 <p class="text-xs font-semibold text-slate-500">Sin precio vigente</p>
                                 {% endif %}
@@ -76,11 +139,7 @@
                         </div>
 
                         {% if linea.kit_indivisible %}
-                        <p class="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-bold text-indigo-950">
-                            <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
-                                <path d="M5 6.5 10 4l5 2.5v7L10 16l-5-2.5v-7Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-                                <path d="M5.5 6.8 10 9l4.5-2.2M10 9v6.5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-                            </svg>
+                        <p class="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-bold text-[#0F1E36]">
                             Paquete técnico indivisible · cálculo #{{ linea.origen_calculo_id }}
                         </p>
                         {% endif %}
@@ -88,35 +147,35 @@
                         {% if linea.disponible %}
                         {% if linea.resina_a_kg or linea.catalizador_b_kg or linea.pigmento_gramos %}
                         <dl class="mt-3 flex flex-wrap gap-2 text-xs">
-                            {% if linea.resina_a_kg %}<div class="rounded-md bg-[#F2F3F5] px-2.5 py-1.5"><dt class="inline font-bold text-slate-700">Parte A</dt><dd class="ml-1 inline text-slate-600">{{ linea.resina_a_kg }} kg</dd></div>{% endif %}
-                            {% if linea.catalizador_b_kg %}<div class="rounded-md bg-[#F2F3F5] px-2.5 py-1.5"><dt class="inline font-bold text-slate-700">Parte B</dt><dd class="ml-1 inline text-slate-600">{{ linea.catalizador_b_kg }} kg</dd></div>{% endif %}
-                            {% if linea.pigmento_gramos %}<div class="rounded-md bg-[#F2F3F5] px-2.5 py-1.5"><dt class="inline font-bold text-slate-700">Pigmento</dt><dd class="ml-1 inline text-slate-600">{{ linea.pigmento_gramos }} g</dd></div>{% endif %}
+                            {% if linea.resina_a_kg %}<div class="rounded-md bg-slate-100 px-2.5 py-1"><dt class="inline font-bold text-[#0F1E36]">Parte A</dt><dd class="ml-1 inline text-slate-600">{{ linea.resina_a_kg }} kg</dd></div>{% endif %}
+                            {% if linea.catalizador_b_kg %}<div class="rounded-md bg-slate-100 px-2.5 py-1"><dt class="inline font-bold text-[#0F1E36]">Parte B</dt><dd class="ml-1 inline text-slate-600">{{ linea.catalizador_b_kg }} kg</dd></div>{% endif %}
+                            {% if linea.pigmento_gramos %}<div class="rounded-md bg-slate-100 px-2.5 py-1"><dt class="inline font-bold text-[#0F1E36]">Pigmento</dt><dd class="ml-1 inline text-slate-600">{{ linea.pigmento_gramos }} g</dd></div>{% endif %}
                         </dl>
                         {% endif %}
                         {% endif %}
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-3 sm:px-5">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/80 px-4 py-3 sm:px-5">
                     <div class="flex items-center gap-3">
-                        <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Cantidad</span>
+                        <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Cantidad</span>
                         {% if linea.disponible %}
-                        <div class="inline-flex items-center rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+                        <div class="inline-flex items-center rounded-lg border border-slate-200 bg-white p-1">
                             <form method="post" action="{% url 'sales:actualizar_carrito' linea.presentacion_id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="accion" value="disminuir">
                                 <input type="hidden" name="kit_id" value="{{ linea.kit_id }}">
-                                <button type="submit" aria-label="Reducir cantidad" class="grid h-8 w-8 place-items-center rounded-md text-slate-700 transition hover:bg-[#F2F3F5] hover:text-[#313338] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5865F2]">
-                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4.5 10h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                                <button type="submit" aria-label="Reducir cantidad" class="grid h-8 w-8 place-items-center rounded-md text-[#0F1E36] transition hover:bg-slate-100">
+                                    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4.5 10h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                                 </button>
                             </form>
-                            <span class="min-w-9 text-center text-sm font-extrabold text-[#313338]">{{ linea.cantidad }}</span>
+                            <span class="min-w-9 text-center text-sm font-extrabold text-[#0F1E36]">{{ linea.cantidad }}</span>
                             <form method="post" action="{% url 'sales:actualizar_carrito' linea.presentacion_id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="accion" value="aumentar">
                                 <input type="hidden" name="kit_id" value="{{ linea.kit_id }}">
-                                <button type="submit" aria-label="Aumentar cantidad" class="grid h-8 w-8 place-items-center rounded-md text-slate-700 transition hover:bg-[#F2F3F5] hover:text-[#313338] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5865F2]">
-                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M10 4.5v11m-5.5-5.5h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                                <button type="submit" aria-label="Aumentar cantidad" class="grid h-8 w-8 place-items-center rounded-md text-[#0F1E36] transition hover:bg-slate-100">
+                                    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M10 4.5v11m-5.5-5.5h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                                 </button>
                             </form>
                         </div>
@@ -124,16 +183,14 @@
                         <span class="text-sm font-bold text-slate-700">{{ linea.cantidad }}</span>
                         {% endif %}
                     </div>
+
                     <div class="flex items-center gap-4">
-                        <p class="text-sm text-slate-600">Subtotal <strong class="ml-1 text-base font-extrabold text-[#313338]">S/ {{ linea.subtotal }}</strong></p>
+                        <p class="text-sm text-slate-600">Subtotal <strong class="ml-1 text-base font-extrabold text-[#0F1E36]">S/ {{ linea.subtotal }}</strong></p>
                         <form method="post" action="{% url 'sales:actualizar_carrito' linea.presentacion_id %}">
                             {% csrf_token %}
                             <input type="hidden" name="accion" value="quitar">
                             <input type="hidden" name="kit_id" value="{{ linea.kit_id }}">
-                            <button type="submit" aria-label="{% if linea.kit_indivisible %}Quitar paquete completo{% else %}Quitar producto{% endif %}" class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-700">
-                                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
-                                    <path d="M4.5 6h11m-9.5 0 .6 10h6.8l.6-10M8 6V4.5h4V6m-3 3v4m2-4v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                            <button type="submit" class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-[#E11D48] transition hover:bg-rose-50">
                                 {% if linea.kit_indivisible %}Quitar paquete{% else %}Quitar{% endif %}
                             </button>
                         </form>
@@ -144,58 +201,46 @@
 
             <form method="post" action="{% url 'sales:vaciar_carrito' %}" class="flex justify-end pt-1">
                 {% csrf_token %}
-                <button type="submit" class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-rose-50 hover:text-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-700">
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4.5 6h11m-9.5 0 .6 10h6.8l.6-10M8 6V4.5h4V6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-rose-50 hover:text-[#E11D48]">
                     Vaciar carrito
                 </button>
             </form>
         </div>
 
-        <aside class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:sticky xl:top-24">
-            <div class="bg-[#313338] px-5 py-4 text-white">
-                <p class="text-xs font-bold uppercase tracking-[0.14em] text-white/65">Resumen de compra</p>
-                <h2 class="mt-1 text-lg font-extrabold">Tus materiales</h2>
+        <aside class="sgd-summary-card xl:sticky xl:top-24">
+            <div class="sgd-summary-head">
+                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-sky-200">Resumen de compra</p>
+                <h2 class="mt-0.5 text-lg font-extrabold">Detalle de materiales</h2>
             </div>
             <div class="p-5">
                 <dl class="space-y-3 text-sm">
-                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Artículos</dt><dd class="font-bold text-[#313338]">{{ cantidad_articulos }}</dd></div>
-                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Resina Parte A</dt><dd class="font-semibold text-[#313338]">{{ total_resina_a_kg }} kg</dd></div>
-                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Catalizador Parte B</dt><dd class="font-semibold text-[#313338]">{{ total_catalizador_b_kg }} kg</dd></div>
-                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Pigmento</dt><dd class="font-semibold text-[#313338]">{{ total_pigmento_gramos }} g</dd></div>
+                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Artículos</dt><dd class="font-bold text-[#0F1E36]">{{ cantidad_articulos }}</dd></div>
+                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Resina Parte A</dt><dd class="font-semibold text-[#0F1E36]">{{ total_resina_a_kg }} kg</dd></div>
+                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Catalizador Parte B</dt><dd class="font-semibold text-[#0F1E36]">{{ total_catalizador_b_kg }} kg</dd></div>
+                    <div class="flex items-center justify-between gap-4"><dt class="text-slate-600">Pigmento</dt><dd class="font-semibold text-[#0F1E36]">{{ total_pigmento_gramos }} g</dd></div>
                 </dl>
                 <div class="my-5 border-t border-dashed border-slate-200"></div>
                 <div class="flex items-end justify-between gap-4">
                     <span class="text-sm font-bold text-slate-600">Subtotal estimado</span>
-                    <span class="text-2xl font-extrabold tracking-tight text-[#313338]">S/ {{ subtotal }}</span>
+                    <span class="text-2xl font-extrabold tracking-tight text-[#0F1E36]">S/ {{ subtotal }}</span>
                 </div>
-                <p class="mt-2 text-xs leading-5 text-slate-500">El total final se confirma al completar los datos del pedido.</p>
-                <a href="{% url 'sales:checkout' %}" class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-4 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-                    Continuar al pago
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <a href="{% url 'sales:checkout' %}" class="sgd-cta-primary mt-5">
+                    Continuar al pago →
                 </a>
-                <div class="mt-4 flex items-start gap-2 rounded-xl bg-[#F2F3F5] p-3 text-xs leading-5 text-slate-600">
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="mt-0.5 h-4 w-4 shrink-0 text-[#4752C4]"><path d="M10 2.8 4 5v4.7c0 3.5 2.5 5.9 6 7.5 3.5-1.6 6-4 6-7.5V5l-6-2.2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="m7.5 9.8 1.7 1.7 3.5-3.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <p>Precios y existencias se vuelven a validar al registrar el pedido.</p>
-                </div>
+                <p class="mt-3 text-center text-[11px] text-slate-500">Flete S/ 0 en Lima desde S/ 260 · Stock verificado.</p>
             </div>
         </aside>
     </div>
     {% else %}
-    <div class="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white text-center shadow-sm">
-        <div class="bg-[#313338] px-5 py-3 text-left text-xs font-bold uppercase tracking-[0.14em] text-white/75">Carrito de compras</div>
-        <div class="px-6 py-12">
-            <span class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-indigo-50 text-[#4752C4]">
-                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" class="h-8 w-8">
-                    <path d="M3.5 4.5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4l1.5-6.3H6.4M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </span>
-            <h2 class="mt-5 text-xl font-extrabold text-[#313338]">Tu carrito está esperando materiales</h2>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">Explora el catálogo y agrega presentaciones o prepara un paquete desde el estimador técnico.</p>
-            <a href="{% url 'catalog:store_front' %}" class="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#5865F2] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">
-                Explorar materiales
-                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" class="h-4 w-4"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-        </div>
+    <div class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+        <span class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-sky-50 text-[#166091]">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-8 w-8"><path d="M3.5 4.5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4l1.5-6.3H6.4M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h2 class="mt-5 text-xl font-extrabold text-[#0F1E36]">Tu carrito está vacío</h2>
+        <p class="mx-auto mt-2 max-w-md text-sm text-slate-600">Explora el catálogo o usa nuestro estimador técnico para armar tu kit completo.</p>
+        <a href="{% url 'catalog:store_front' %}" class="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#0F1E36] px-6 py-3 text-sm font-extrabold text-white transition hover:bg-[#166091]">
+            Explorar tienda →
+        </a>
     </div>
     {% endif %}
 </section>

@@ -1,107 +1,138 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Comprobante {{ pedido.numero }} | SIGCE{% endblock %}
+{% block title %}Comprobante {{ pedido.numero }} | SGD Global Import{% endblock %}
 
 {% block content %}
+<style>
+    .sgd-receipt-banner {
+        background: linear-gradient(120deg, #0F1E36 0%, #166091 100%);
+        border-radius: 1.35rem;
+        padding: 1.75rem;
+        color: #FFFFFF;
+        box-shadow: 0 18px 35px -15px rgba(15, 30, 54, 0.35);
+    }
+    @media print {
+        header a, header button, nav, footer { display: none !important; }
+        body { background: #fff !important; }
+        main { max-width: none !important; padding: 0 !important; }
+        .sgd-receipt-banner { background: #0F1E36 !important; color: #000 !important; box-shadow: none !important; }
+    }
+</style>
+
 <section class="mx-auto max-w-4xl space-y-6">
-    <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-            <p class="text-sm font-semibold uppercase tracking-wide text-[#4752C4]">{% if pedido.estado == "PROFORMA" %}Proforma corporativa{% else %}Comprobante de pedido{% endif %}</p>
-            <h1 class="mt-1 text-3xl font-extrabold text-[#313338]">{{ pedido.numero }}</h1>
-            <p class="mt-2 text-sm text-slate-600">Estado: <strong class="text-[#313338]">{{ pedido.get_estado_display }}</strong></p>
+    <!-- Banner de confirmación -->
+    <header class="sgd-receipt-banner flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-4">
+            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl {% if pedido.estado == 'PROFORMA' %}bg-white/15 text-sky-200{% else %}bg-[#84CC16] text-[#0F1E36]{% endif %}">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="h-6 w-6"><path d="M5 12.5 9.5 17 19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <div>
+                <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-sky-200">
+                    {% if pedido.estado == "PROFORMA" %}Proforma corporativa{% else %}Pedido confirmado{% endif %}
+                </p>
+                <h1 class="mt-0.5 text-2xl font-extrabold sm:text-3xl">{{ pedido.numero }}</h1>
+                <p class="mt-1 text-sm text-slate-200">Estado actual: <strong class="text-white">{{ pedido.get_estado_display }}</strong></p>
+            </div>
         </div>
-        <button type="button" onclick="window.print()" class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-[#313338] hover:bg-[#F2F3F5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5865F2] print:hidden">Imprimir</button>
+        <div class="flex flex-wrap gap-2 print:hidden">
+            <button type="button" onclick="window.print()" class="rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">
+                Imprimir
+            </button>
+            <a href="{% url 'catalog:store_front' %}" class="rounded-xl bg-[#E11D48] px-4 py-2.5 text-sm font-extrabold text-white shadow transition hover:bg-rose-700">
+                Seguir comprando
+            </a>
+        </div>
     </header>
 
-    <div class="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 sm:grid-cols-2">
-        <div><p class="text-xs uppercase tracking-wide text-slate-500">Cliente</p><p class="font-semibold text-[#313338]">{{ pedido.cliente_nombre }}</p></div>
-        <div><p class="text-xs uppercase tracking-wide text-slate-500">DNI / RUC</p><p class="font-semibold text-[#313338]">{{ pedido.cliente_documento }}</p></div>
-        <div><p class="text-xs uppercase tracking-wide text-slate-500">Correo</p><p class="font-semibold text-[#313338]">{{ pedido.cliente_correo }}</p></div>
-        <div><p class="text-xs uppercase tracking-wide text-slate-500">Seguimiento programado</p><p class="font-semibold text-[#313338]">{{ pedido.fecha_recordatorio|date:"d/m/Y" }}</p></div>
+    <div class="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:grid-cols-2 lg:grid-cols-4">
+        <div><p class="text-[11px] font-bold uppercase tracking-wide text-slate-400">Cliente</p><p class="mt-1 font-bold text-[#0F1E36]">{{ pedido.cliente_nombre }}</p></div>
+        <div><p class="text-[11px] font-bold uppercase tracking-wide text-slate-400">DNI / RUC</p><p class="mt-1 font-bold text-[#0F1E36]">{{ pedido.cliente_documento }}</p></div>
+        <div><p class="text-[11px] font-bold uppercase tracking-wide text-slate-400">Correo</p><p class="mt-1 truncate font-bold text-[#0F1E36]">{{ pedido.cliente_correo }}</p></div>
+        <div><p class="text-[11px] font-bold uppercase tracking-wide text-slate-400">Seguimiento</p><p class="mt-1 font-extrabold text-[#166091]">{{ pedido.fecha_recordatorio|date:"d/m/Y" }}</p></div>
     </div>
 
     {% if pedido.tipo_servicio %}
-    <section class="rounded-2xl border border-indigo-200 bg-white p-5 shadow-sm">
-        <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#4752C4]">Servicio solicitado</p>
-        <h2 class="mt-1 text-xl font-extrabold text-[#313338]">{{ pedido.get_tipo_servicio_display }}</h2>
+    <section class="rounded-2xl border border-sky-200 bg-white p-5 shadow-xs">
+        <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#166091]">Servicio solicitado</p>
+        <h2 class="mt-1 text-xl font-extrabold text-[#0F1E36]">{{ pedido.get_tipo_servicio_display }}</h2>
         <p class="mt-1 text-sm text-slate-600">Aplicación: {{ pedido.get_proyecto_servicio_display }}</p>
         {% if pedido.costo_instalacion %}
         <dl class="mt-4 grid gap-3 border-t border-slate-100 pt-4 text-sm sm:grid-cols-3">
-            <div><dt class="text-slate-500">Días coordinados</dt><dd class="font-bold text-[#313338]">{{ pedido.dias_servicio }}</dd></div>
-            <div><dt class="text-slate-500">Tarifa diaria</dt><dd class="font-bold text-[#313338]">S/ {{ pedido.tarifa_diaria_aplicada }}</dd></div>
-            <div><dt class="text-slate-500">Importe del servicio</dt><dd class="font-bold text-[#313338]">S/ {{ pedido.costo_instalacion }}</dd></div>
+            <div><dt class="text-slate-500">Días coordinados</dt><dd class="font-bold text-[#0F1E36]">{{ pedido.dias_servicio }}</dd></div>
+            <div><dt class="text-slate-500">Tarifa diaria</dt><dd class="font-bold text-[#0F1E36]">S/ {{ pedido.tarifa_diaria_aplicada }}</dd></div>
+            <div><dt class="text-slate-500">Importe del servicio</dt><dd class="font-bold text-[#0F1E36]">S/ {{ pedido.costo_instalacion }}</dd></div>
         </dl>
         {% else %}
-        <p class="mt-4 rounded-xl bg-[#F2F3F5] p-3 text-sm leading-6 text-slate-700">
-            La tarifa diaria y los días están pendientes de coordinación. Los datos del contratista no se muestran en este comprobante.
+        <p class="mt-4 rounded-xl bg-slate-50 p-3 text-sm leading-6 text-slate-700 border border-slate-200/70">
+            La tarifa diaria y los días están pendientes de coordinación antes de emitir el cobro del servicio.
         </p>
         {% endif %}
     </section>
     {% endif %}
 
     {% if pedido.detalles.all %}
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xs">
         <table class="w-full min-w-[42rem] text-left text-sm">
-            <thead class="bg-[#F2F3F5] text-xs uppercase tracking-wide text-slate-600">
-                <tr><th class="px-4 py-3">SKU / presentación</th><th class="px-4 py-3">Detalle técnico</th><th class="px-4 py-3">Cantidad</th><th class="px-4 py-3">Precio unitario</th><th class="px-4 py-3">Subtotal</th></tr>
+            <thead class="bg-[#0F1E36] text-xs uppercase tracking-wide text-white">
+                <tr><th class="px-4 py-3.5">SKU / presentación</th><th class="px-4 py-3.5">Detalle técnico</th><th class="px-4 py-3.5">Cantidad</th><th class="px-4 py-3.5">Precio unitario</th><th class="px-4 py-3.5">Subtotal</th></tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 {% for detalle in pedido.detalles.all %}
                 <tr>
-                    <td class="px-4 py-3"><strong>{{ detalle.presentacion.sku }}</strong><br>{{ detalle.presentacion.nombre_envase }}</td>
-                    <td class="px-4 py-3">
+                    <td class="px-4 py-3"><strong class="text-[#0F1E36]">{{ detalle.presentacion.sku }}</strong><br><span class="text-xs text-slate-500">{{ detalle.presentacion.nombre_envase }}</span></td>
+                    <td class="px-4 py-3 text-xs text-slate-600">
                         {% if detalle.presentacion.resina_a_kg %}Parte A {{ detalle.presentacion.resina_a_kg }} kg{% endif %}
                         {% if detalle.presentacion.catalizador_b_kg %}<br>Parte B {{ detalle.presentacion.catalizador_b_kg }} kg{% endif %}
                         {% if detalle.presentacion.unidad_medida == "GRAMO" %}<br>Pigmento {{ detalle.presentacion.cantidad_neta }} g{% endif %}
                         {% if not detalle.presentacion.resina_a_kg and not detalle.presentacion.catalizador_b_kg and detalle.presentacion.unidad_medida != "GRAMO" %}{{ detalle.presentacion.producto.proporcion_mezcla }}{% endif %}
                     </td>
-                    <td class="px-4 py-3">{{ detalle.cantidad }}</td>
+                    <td class="px-4 py-3 font-bold text-[#0F1E36]">{{ detalle.cantidad }}</td>
                     <td class="px-4 py-3">S/ {{ detalle.precio_unitario }}</td>
-                    <td class="px-4 py-3 font-semibold">S/ {{ detalle.subtotal }}</td>
+                    <td class="px-4 py-3 font-extrabold text-[#0F1E36]">S/ {{ detalle.subtotal }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
-            <tfoot class="border-t border-slate-200 bg-[#F2F3F5]">
-                <tr><th colspan="4" class="px-4 py-3 text-right">Subtotal de materiales</th><td class="px-4 py-3 font-extrabold">S/ {{ pedido.subtotal_materiales }}</td></tr>
-                {% if pedido.costo_instalacion %}<tr><th colspan="4" class="px-4 py-3 text-right">Servicio coordinado</th><td class="px-4 py-3 font-extrabold">S/ {{ pedido.costo_instalacion }}</td></tr>{% endif %}
-                {% if not pedido.tipo_servicio or pedido.costo_instalacion %}<tr><th colspan="4" class="px-4 py-3 text-right">Total</th><td class="px-4 py-3 font-extrabold">S/ {{ pedido.total_pagar }}</td></tr>{% endif %}
+            <tfoot class="border-t border-slate-200 bg-slate-50">
+                <tr><th colspan="4" class="px-4 py-3 text-right text-slate-600">Subtotal de materiales</th><td class="px-4 py-3 font-extrabold text-[#0F1E36]">S/ {{ pedido.subtotal_materiales }}</td></tr>
+                {% if pedido.costo_instalacion %}<tr><th colspan="4" class="px-4 py-3 text-right text-slate-600">Servicio coordinado</th><td class="px-4 py-3 font-extrabold text-[#0F1E36]">S/ {{ pedido.costo_instalacion }}</td></tr>{% endif %}
+                {% if not pedido.tipo_servicio or pedido.costo_instalacion %}<tr><th colspan="4" class="px-4 py-3 text-right text-base text-[#0F1E36]">Total</th><td class="px-4 py-3 text-base font-extrabold text-[#E11D48]">S/ {{ pedido.total_pagar }}</td></tr>{% endif %}
             </tfoot>
         </table>
     </div>
     {% elif not pedido.tipo_servicio %}
-    <p class="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">Este pedido no contiene presentaciones de materiales.</p>
+    <p class="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">Este pedido no contiene presentaciones de materiales.</p>
     {% endif %}
 
     {% if pedido.estado == "PROFORMA" %}
-    <div class="rounded-xl border border-indigo-200 bg-indigo-50 p-5">
-        <h2 class="font-bold text-indigo-950">{% if pedido.tipo_servicio and not pedido.costo_instalacion %}Solicitud de servicio pendiente de cotización{% else %}Proforma pendiente{% endif %}</h2>
-        <p class="mt-1 text-sm text-indigo-900">{% if pedido.tipo_servicio and not pedido.costo_instalacion %}Primero se deben coordinar profesional, días y tarifa diaria. No se ha cobrado el servicio.{% else %}El inventario permanece intacto hasta la confirmación del pago por personal autorizado.{% endif %}</p>
+    <div class="rounded-2xl border border-sky-200 bg-sky-50 p-5">
+        <h2 class="font-extrabold text-[#0F1E36]">{% if pedido.tipo_servicio and not pedido.costo_instalacion %}Solicitud de servicio pendiente de cotización{% else %}Proforma pendiente de confirmación{% endif %}</h2>
+        <p class="mt-1 text-sm text-slate-700">{% if pedido.tipo_servicio and not pedido.costo_instalacion %}Primero se deben coordinar profesional, días y tarifa diaria.{% else %}El inventario permanece intacto hasta confirmar el pago.{% endif %}</p>
         {% if user.is_staff and pedido.tipo_servicio %}
             {% if pedido.contratista and pedido.dias_servicio and pedido.tarifa_diaria_aplicada %}
             <form method="post" action="{% url 'sales:confirmar_proforma' pedido.numero %}" class="mt-4 print:hidden">
                 {% csrf_token %}
-                <button type="submit" class="rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">Confirmar pago de proforma</button>
+                <button type="submit" class="rounded-xl bg-[#0F1E36] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#166091]">Confirmar pago de proforma</button>
             </form>
             {% else %}
-            <p class="mt-3 text-sm font-semibold text-indigo-950">Completa la asignación y tarifa diaria desde el panel interno antes de confirmar.</p>
+            <p class="mt-3 text-sm font-bold text-[#166091]">Completa la asignación y tarifa diaria desde el panel interno antes de confirmar.</p>
             {% endif %}
         {% elif user.is_staff %}
         <form method="post" action="{% url 'sales:confirmar_proforma' pedido.numero %}" class="mt-4 print:hidden">
             {% csrf_token %}
-            <button type="submit" class="rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#4752C4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]">Confirmar Pago de Proforma y Despachar Stock</button>
+            <button type="submit" class="rounded-xl bg-[#0F1E36] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#166091]">Confirmar Pago de Proforma y Despachar Stock</button>
         </form>
         {% endif %}
     </div>
     {% endif %}
 
-    <section class="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 class="text-lg font-bold text-[#313338]">Movimientos de Kárdex</h2>
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+        <h2 class="text-base font-extrabold text-[#0F1E36]">Trazabilidad de inventario (Kárdex)</h2>
         {% if movimientos %}
         <ul class="mt-3 divide-y divide-slate-100 text-sm">
             {% for movimiento in movimientos %}
             <li class="flex flex-col justify-between gap-1 py-3 sm:flex-row sm:items-center">
-                <span><strong>{{ movimiento.presentacion.sku }}</strong> · {{ movimiento.get_tipo_movimiento_display }} · {{ movimiento.cantidad }}</span>
-                <span class="text-slate-600">{{ movimiento.stock_anterior }} → {{ movimiento.stock_nuevo }}</span>
+                <span><strong class="text-[#0F1E36]">{{ movimiento.presentacion.sku }}</strong> · {{ movimiento.get_tipo_movimiento_display }} · {{ movimiento.cantidad }}</span>
+                <span class="font-mono text-xs text-slate-600">Stock: {{ movimiento.stock_anterior }} → {{ movimiento.stock_nuevo }}</span>
             </li>
             {% endfor %}
         </ul>
@@ -110,13 +141,6 @@
         {% endif %}
     </section>
 
-    <p class="text-xs text-slate-500">Pedido registrado el {{ pedido.creado_en|date:"d/m/Y H:i" }}. Este comprobante corresponde a una transacción de demostración.</p>
+    <p class="text-xs text-slate-500">Registrado el {{ pedido.creado_en|date:"d/m/Y H:i" }} · Comprobante de demostración SGD Global Import.</p>
 </section>
-<style>
-    @media print {
-        header a, header button, nav, footer { display: none !important; }
-        body { background: #fff !important; }
-        main { max-width: none !important; padding: 0 !important; }
-    }
-</style>
 {% endblock %}
