@@ -1,26 +1,40 @@
 {% extends "layouts/base.html" %}
 
+{% block title %}Estimador técnico de resina | SGD Global Import{% endblock %}
+
 {% block content %}
-<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-    <nav aria-label="Ruta de navegación" class="mb-5 text-sm text-slate-500">
-        <a href="{% url 'catalog:store_front' %}" class="font-medium text-[#4752C4] hover:underline">Catálogo</a>
+<style>
+    .sgd-est-hero {
+        background: linear-gradient(120deg, #0F1E36 0%, #166091 100%);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        color: #FFFFFF;
+        box-shadow: 0 18px 36px -14px rgba(15, 30, 54, 0.35);
+    }
+</style>
+
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+    <nav aria-label="Ruta de navegación" class="text-sm text-slate-500">
+        <a href="{% url 'catalog:store_front' %}" class="font-bold text-[#166091] hover:underline">Catálogo</a>
         <span aria-hidden="true" class="mx-2">/</span>
-        <span aria-current="page" class="font-semibold text-[#313338]">Estimador técnico</span>
+        <span aria-current="page" class="font-bold text-[#0F1E36]">Estimador técnico</span>
     </nav>
 
-    <header class="mb-7 overflow-hidden rounded-2xl bg-[#313338] text-white shadow-sm">
-        <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300">Herramienta de proyecto · RF-03</p>
-                <h1 class="mt-2 text-2xl font-extrabold sm:text-3xl">Calcula materiales para tu proyecto</h1>
-                <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
-                    Elige el uso final, ingresa medidas y recibe la dosificación técnica junto con una cotización basada en kits y pigmentos disponibles.
-                </p>
-            </div>
-            <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                Explorar catálogo
-            </a>
+    <header class="sgd-est-hero grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div>
+            <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-sky-200">
+                Herramienta de proyecto · RF-03 · Validación Normativa
+            </span>
+            <h1 class="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">
+                Calcula materiales para tu proyecto
+            </h1>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-200">
+                Elige la aplicación, ingresa tus medidas (o largo × ancho) y obtén la dosificación matemática exacta con alertas técnicas y cotización real de kits A+B.
+            </p>
         </div>
+        <a href="{% url 'catalog:store_front' %}" class="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-extrabold text-white backdrop-blur transition hover:bg-white/20">
+            Explorar catálogo →
+        </a>
     </header>
 
     {% include "calculator/partials/calculator_widget.html" %}

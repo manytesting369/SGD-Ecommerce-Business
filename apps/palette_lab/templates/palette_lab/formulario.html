@@ -42,8 +42,24 @@
         <form method="post" class="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
             {% csrf_token %}
             {{ formset.management_form }}
-            {% if form.non_field_errors %}<div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{{ form.non_field_errors }}</div>{% endif %}
-            {% if formset.non_form_errors %}<div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{{ formset.non_form_errors }}</div>{% endif %}
+
+            {% if form.errors or formset.errors or formset.non_form_errors %}
+            <div class="rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-900" role="alert">
+                <p class="font-extrabold">Revisa estos datos antes de guardar la receta:</p>
+                <ul class="mt-1.5 list-disc pl-5 text-xs space-y-1">
+                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    {% for field in form %}
+                        {% for error in field.errors %}<li><strong>{{ field.label }}:</strong> {{ error }}</li>{% endfor %}
+                    {% endfor %}
+                    {% for error in formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+                    {% for detail_form in formset %}
+                        {% for field in detail_form.visible_fields %}
+                            {% for error in field.errors %}<li><strong>{{ field.label }}:</strong> {{ error }}</li>{% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
 
             <fieldset class="space-y-4">
                 <legend class="text-base font-extrabold text-[#0F1E36]">1. Datos base y tono de referencia</legend>
@@ -157,7 +173,7 @@
             </div>
         </form>
 
-        <!-- Vista previa y calculadora en vivo -->
+        <!-- Vista previa y cálculo en vivo -->
         <aside class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
             <h2 class="text-base font-extrabold text-[#0F1E36]">Vista previa en vivo</h2>
             <div id="form-preview-swatch" class="h-24 w-full rounded-xl border border-slate-200 shadow-inner transition-colors" style="background-color: #5865F2;"></div>
@@ -249,7 +265,10 @@
                 }
             }
             if (preparedInput && chargeInput && preparationStatus && preparationDescription) {
-                chargeInput.disabled = !preparedInput.checked;
+                // IMPORTANTE: usar readOnly (NO disabled) para que 0.00 siempre viaje en el POST
+                chargeInput.readOnly = !preparedInput.checked;
+                chargeInput.classList.toggle("bg-slate-100", !preparedInput.checked);
+                chargeInput.classList.toggle("text-slate-400", !preparedInput.checked);
                 if (!preparedInput.checked) chargeInput.value = "0.00";
                 preparationStatus.textContent = preparedInput.checked
                     ? "Servicio preparado seleccionado (RF-08):"

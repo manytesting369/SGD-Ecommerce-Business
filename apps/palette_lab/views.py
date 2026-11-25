@@ -1,7 +1,7 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -18,21 +18,38 @@ def _guardar_paleta_con_detalles(form, formset):
     with transaction.atomic():
         paleta = form.save()
         formset.instance = paleta
-        pigmentos = formset.save(commit=False)
         total_pigmento_g = (
             paleta.peso_resina_kg
             * Decimal("1000")
             * paleta.dosificacion_pct
             / Decimal("100")
         )
+
+        # IMPORTANTE: formset.save(commit=False) debe llamarse ANTES de leer formset.deleted_objects
+        pigmentos = formset.save(commit=False)
+
+        # 1. Eliminar filas marcadas para borrado primero
+        for detalle in formset.deleted_objects:
+            if detalle.pk:
+                detalle.delete()
+
+        # 2. Guardar filas nuevas o modificadas con su cálculo exacto en gramos
         for detalle in pigmentos:
+            detalle.paleta = paleta
             detalle.gramos = (
                 total_pigmento_g * detalle.porcentaje / Decimal("100")
-            ).quantize(Decimal("0.01"))
+            ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             detalle.save()
-        for detalle in formset.deleted_objects:
-            detalle.delete()
         formset.save_m2m()
+
+        # 3. Recalcular también cualquier pigmento existente si cambió el peso o la dosificación
+        for detalle in paleta.pigmentos.all():
+            nuevo_gramaje = (
+                total_pigmento_g * detalle.porcentaje / Decimal("100")
+            ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            if detalle.gramos != nuevo_gramaje:
+                detalle.gramos = nuevo_gramaje
+                detalle.save(update_fields=["gramos"])
     return paleta
 
 
@@ -43,9 +60,16 @@ def crear_paleta(request):
         paleta = Paleta()
         formset = PaletaDetalleFormSet(request.POST, instance=paleta)
         if form.is_valid() and formset.is_valid():
-            paleta = _guardar_paleta_con_detalles(form, formset)
-            messages.success(request, f"Paleta «{paleta.nombre}» guardada con éxito.")
-            return redirect(reverse("palette_lab:lista"))
+            try:
+                paleta = _guardar_paleta_con_detalles(form, formset)
+            except IntegrityError:
+                form.add_error(
+                    None,
+                    "No se pudo guardar la receta por datos duplicados o fuera de rango. Revisa los pigmentos.",
+                )
+            else:
+                messages.success(request, f"Paleta «{paleta.nombre}» guardada con éxito.")
+                return redirect(reverse("palette_lab:lista"))
     else:
         initial = {}
         hex_param = request.GET.get("hex", "").strip()
@@ -75,9 +99,16 @@ def editar_paleta(request, pk):
         form = PaletaForm(request.POST, instance=paleta)
         formset = PaletaDetalleFormSet(request.POST, instance=paleta)
         if form.is_valid() and formset.is_valid():
-            paleta = _guardar_paleta_con_detalles(form, formset)
-            messages.success(request, f"Paleta «{paleta.nombre}» actualizada.")
-            return redirect(reverse("palette_lab:lista"))
+            try:
+                paleta = _guardar_paleta_con_detalles(form, formset)
+            except IntegrityError:
+                form.add_error(
+                    None,
+                    "No se pudo actualizar la receta por datos duplicados o fuera de rango.",
+                )
+            else:
+                messages.success(request, f"Paleta «{paleta.nombre}» actualizada.")
+                return redirect(reverse("palette_lab:lista"))
     else:
         form = PaletaForm(instance=paleta)
         formset = PaletaDetalleFormSet(instance=paleta)

@@ -35,6 +35,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.ngrok-free.app",
     "https://*.ngrok-free.dev",
     "https://*.trycloudflare.com",
+    "https://*.onrender.com",
 ]
 if NGROK_DOMAIN:
     CSRF_TRUSTED_ORIGINS.append(f"https://{NGROK_DOMAIN}")
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -86,6 +88,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+DB_OPTIONS = {"connect_timeout": 10}
+if os.environ.get("POSTGRES_SSLMODE"):
+    DB_OPTIONS["sslmode"] = os.environ["POSTGRES_SSLMODE"]
+
 # ================= CONEXIÓN SEGURA A POSTGRESQL (PUERTO 5435) =================
 DATABASES = {
     "default": {
@@ -114,11 +120,11 @@ TIME_ZONE = "America/Lima"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
